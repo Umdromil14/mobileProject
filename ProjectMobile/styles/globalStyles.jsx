@@ -5,6 +5,14 @@ export const globalStyles = StyleSheet.create({
     container: {
         padding: 20,
     },
+    background : {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#463E3E',
+        flex: 1, 
+        alignItems: "center", 
+        justifyContent: "center"
+    },
     button : {
         backgroundColor : "#fff",
         borderRadius: 10,
