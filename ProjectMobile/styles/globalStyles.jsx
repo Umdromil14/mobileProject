@@ -19,5 +19,17 @@ export const globalStyles = StyleSheet.create({
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         borderBottomRightRadius: 20,
+    },
+    textForm : {
+        paddingTop: 12,
+        paddingLeft: 16,
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#fff',
+    },
+    button : {
+        backgroundColor: '#59A52C',
+        borderWidth: 0,
+        borderRadius: 20,
     }
 });
