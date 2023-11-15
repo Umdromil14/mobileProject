@@ -7,7 +7,7 @@ import { globalStyles } from "../styles/globalStyles";
 import logo from "../images/logo.png";
 import axios from 'axios';
 
-const axiosInstance = axios.create({baseURL: 'http://localhost:3000/'});
+const axiosInstance = axios.create({baseURL: 'http://localhost:3001/'});
 
 function SignUp ({ navigation })
 {
@@ -93,10 +93,12 @@ function SignUp ({ navigation })
                 <ValidateButton
                         title="Sign Up"
                         onPress={() => {
-                            console.log(Username);
-                            console.log(firstname);
-                            console.log(lastname);
-                            
+                            // console.log(Username);
+                            // console.log(firstname);
+                            // console.log(lastname);
+                            axios.get('http://192.168.19.84:3001/user').then((res) => {
+                                console.log(res.data[0]);
+                            });
                         }}
                     />
 
