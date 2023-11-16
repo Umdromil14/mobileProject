@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View,Text } from 'react-native';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -14,7 +14,33 @@ const Tab = createBottomTabNavigator();
 
 function Home(){
   return (
-    <Tab.Navigator tabBar={<Screens/>} initialRouteName={Account}/>
+    <Tab.Navigator
+      initialRouteName="Home"
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Tab.Screen
+        initialParams={{
+          screen: 'Home/ScreenA',
+        }}
+        options={{
+          unmountOnBlur: true,
+        }}
+        name="Home"
+        component={<View><Text>Home</Text></View>}
+      />
+      <Tab.Screen
+        initialParams={{
+          screen: 'Settings/ScreenA',
+        }}
+        options={{
+          unmountOnBlur: true,
+        }}
+        name="Settings"
+        component={<View><Text>Hello</Text></View>}
+      />
+    </Tab.Navigator>
+
   );
 }
 

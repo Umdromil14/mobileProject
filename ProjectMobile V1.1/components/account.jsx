@@ -8,6 +8,8 @@ import { globalStyles } from "../styles/globalStyles";
 import { Screens } from "../tools/BottomNav";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
+import Games from "./games";
+
 const Tab = createBottomTabNavigator();
 
 function Account({ navigation }){
@@ -23,6 +25,7 @@ function Account({ navigation }){
                 height: Dimensions.get('window').height
             }}
         >
+            <Games/>
             <View style={{backgroundColor: '#443D3D', flex: 10}}>
                 <StatusBar
                     backgroundColor={'#443D3D'}
