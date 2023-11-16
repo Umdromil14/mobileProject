@@ -9,7 +9,9 @@ import { globalStyles } from "../styles/globalStyles";
 
 function Games({ navigation }){
     return (
-        <Text>Games</Text>
+        <View>
+            <Text>Games</Text>  
+        </View>
     )
 }
 

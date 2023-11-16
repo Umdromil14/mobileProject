@@ -37,5 +37,11 @@ export const globalStyles = StyleSheet.create({
         backgroundColor: '#59A52C',
         borderWidth: 0,
         borderRadius: 20,
+    },
+    tinyLogo: {
+        width: 50,
+        height: 50,
+        alignSelf: "center",
+        marginTop: 25
     }
 });
