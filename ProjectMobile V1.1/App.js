@@ -5,9 +5,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SignUp  from './components/signUp';
 import SignIn  from './components/signIn';
-import Account  from './components/account';
-import { Screens } from "./tools/BottomNav";
+
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import Games from './components/games';
+import Discover from './components/discover';
+import Account from './components/account';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -21,23 +24,33 @@ function Home(){
       }}>
       <Tab.Screen
         initialParams={{
-          screen: 'Home/ScreenA',
+          screen: 'Home/Games',
         }}
         options={{
           unmountOnBlur: true,
         }}
-        name="Home"
-        component={<View><Text>Home</Text></View>}
+        name="Games"
+        component={Games}
       />
       <Tab.Screen
         initialParams={{
-          screen: 'Settings/ScreenA',
+          screen: 'Home/Discover',
         }}
         options={{
           unmountOnBlur: true,
         }}
-        name="Settings"
-        component={<View><Text>Hello</Text></View>}
+        name="Discover"
+        component={Discover}
+      />
+      <Tab.Screen
+        initialParams={{
+          screen: 'Home/Discover',
+        }}
+        options={{
+          unmountOnBlur: true,
+        }}
+        name="Account"
+        component={Account}
       />
     </Tab.Navigator>
 

@@ -12,7 +12,7 @@ import Games from "./games";
 
 const Tab = createBottomTabNavigator();
 
-function Account({ navigation }){
+function Account(){
     const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -82,7 +82,6 @@ function Account({ navigation }){
                     </Pressable>
                 </View>
             </View>
-            <Tab.Navigator tabBar={<Screens/>}/>
         </View>
     )
 }
