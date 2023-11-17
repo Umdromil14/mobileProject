@@ -17,7 +17,6 @@ async function postUser(user, func, errors) {
             await login(user,undefined,undefined,true);
         })
         .catch((reason) => {
-            console.log(reason);
             switch (reason.response.request.status) {
                 case 409:
                     func(errors.setErrorMail, {
@@ -28,7 +27,11 @@ async function postUser(user, func, errors) {
                     });
                     break;
                 case 500:
-                    //faire une alerte
+                    <Alert
+                        title="Error"
+                        message="An error has occured"
+                        confirmText="Ok"
+                    />
                     break;
                 default:
                     console.log("unknown error");
@@ -45,23 +48,23 @@ async function login(
 ) {
     let isValid = true;
     if (!isInRegister) {
-        console.log(user);
         cleaningError(func, error);
-        if (!user.identifiant) {
+        if (!user.email && !user.username) {
             func(error.setErrorIdentifiant, {
-                target: { errorMessage: "Email or username is missing" },
+                target: {
+                    errorMessage: "Username or email is missing",
+                },
             });
             isValid = false;
         }
-        user.email = user.identifiant;
-        user.username = user.identifiant;
+        if (!user.password) {
+            func(error.setErrorPassword, {
+                target: { errorMessage: "Password is missing" },
+            });
+            isValid = false;
+        }
     }
-    if (!user.password) {
-        func(error.setErrorPassword, {
-            target: { errorMessage: "Password is missing" },
-        });
-        isValid = false;
-    }
+
 
     if (isValid) {
         await axios

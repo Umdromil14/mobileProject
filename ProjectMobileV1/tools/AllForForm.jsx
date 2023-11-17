@@ -1,5 +1,6 @@
 import { Input, Button, Text } from "@rneui/themed";
 import { globalStyles } from "../styles/globalStyles";
+import { useEffect } from "react";
 
 function InputWithLabel({
     inputStyle = null,
@@ -19,6 +20,13 @@ function InputWithLabel({
     autoCapitalize = null,
     keyboardType = null,
 }) {
+    // useEffect(() => {
+    //     console.log("je suis monté")
+    //     return () => {
+    //         console.log("je suis démonté")
+    //     }
+    // },[])
+
     return (
         <>
             <Text style={labelStyle ? labelStyle : globalStyles.textForm}>{label}</Text>

@@ -6,9 +6,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faLock,faUser,faEye,faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { globalStyles } from "../styles/globalStyles";
 import { login } from "../APIAccess/user";
+import { isValidUsername } from "../tools/utils";
+import { cleaningError } from "../tools/isValidForm";
 
 
-
+//! clear toute les erreurs quand on change de page
 function SignIn({navigation}) {
     const [identifiant, setIdentifiant] = useState('');
     const [password, setPassword] = useState('');
@@ -54,7 +56,13 @@ function SignIn({navigation}) {
         <ValidateButton
             title="Sign In"
             onPress={() => {
-                login({identifiant,password},changeError,{setErrorIdentifiant,setErrorPassword})
+                if (isValidUsername(identifiant)) {
+                    login({username:identifiant,password},changeError,{setErrorIdentifiant,setErrorPassword})
+                } else if (isValidEmail(identifiant)) {
+                    login({email : identifiant,password},changeError,{setErrorIdentifiant,setErrorPassword})
+                } else {
+                    changeError(setErrorIdentifiant, {target: {errorMessage: "Invalid username or email"}})
+                }
                 // navigation.navigate('Account');
             }}
         />
@@ -71,6 +79,7 @@ function SignIn({navigation}) {
                 marginVertical: 10,
             }}
             onPress={() => {
+                cleaningError(changeError,{setErrorIdentifiant, setErrorPassword});
                 navigation.navigate('SignUp');
             }}
         />

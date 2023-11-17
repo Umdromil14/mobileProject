@@ -9,4 +9,9 @@ function isValidPassword(password) {
 function isValidLastNameOrFirstName(name) {
     return /\b([A-ZÀ-ÿ][-,a-z. ']+[ ]*)+$/.test(name);
 }
-export {isValidEmail, isValidPassword, isValidLastNameOrFirstName};
+
+function isValidUsername(username) {
+    return /^((?!@).)*$/.test(username);
+}
+
+export {isValidEmail, isValidPassword, isValidLastNameOrFirstName, isValidUsername};
