@@ -5,11 +5,12 @@ import {Image,View,StyleSheet, Pressable} from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faLock,faUser,faEye,faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { globalStyles } from "../styles/globalStyles";
-import { login } from "../APIAccess/user";
+import { getUser, login } from "../APIAccess/user";
 import { isValidUsername } from "../tools/utils";
 import { cleaningError } from "../tools/isValidForm";
 
 function SignIn({navigation}) {
+    // const [isLogged, setIsLogged] = useState(false);
     const [identifiant, setIdentifiant] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -57,11 +58,9 @@ function SignIn({navigation}) {
                 if (isValidUsername(identifiant)) {
                     try {
                         await login({username:identifiant,password},changeError,{setErrorIdentifiant,setErrorPassword});
-                        //! attention si pas de mdp ou iden: passe à home
                         navigation.navigate('Home');
                     } catch (error) {
-                        console.log(error);
-                        console.log("coucou");
+                        console.error(error);
                     }
                 } else if (isValidEmail(identifiant)) {
                     await login({email : identifiant,password},changeError,{setErrorIdentifiant,setErrorPassword});

@@ -1,23 +1,21 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const APIURL = "http://192.168.137.239:3001";
+const APIURL = "http://192.168.1.42:3001";
 
 async function getToken() {
     try {
-        console.log("getToken");
         const token = await AsyncStorage.getItem("token");
-        console.log(token);
         return token;
     } catch (error) {
-        console.log(error.message);
+        console.error('message:'+error.message);
         //! voir quoi faire haha
     }    
 }
 
 async function getAuthorizationHeader() {
-    //console.log("string");
-    return `Bearer ${await getToken()}`;
+    const token = `Bearer ${await getToken()}`;
+    return token;
 }
 
 const axiosInstance = axios.create({
@@ -25,4 +23,4 @@ const axiosInstance = axios.create({
     headers: { Authorization: getAuthorizationHeader() }
 });
 
-export { APIURL, getAuthorizationHeader, axiosInstance };
+export { APIURL, getAuthorizationHeader, axiosInstance, getToken };

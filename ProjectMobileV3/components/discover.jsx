@@ -7,6 +7,7 @@ import { faGear, faArrowRightFromBracket } from "@fortawesome/free-solid-svg-ico
 import { globalStyles } from "../styles/globalStyles";
 
 function Discover({ navigation }){
+
     return(
         <View
             style={{
