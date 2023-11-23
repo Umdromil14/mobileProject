@@ -43,5 +43,11 @@ export const globalStyles = StyleSheet.create({
         height: 50,
         alignSelf: "center",
         marginTop: 25
-    }
+    },
+    error : {
+        color : '#cc0000',
+        fontSize : 16,
+        fontWeight : 'bold',
+
+    },
 });

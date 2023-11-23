@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View,Text } from 'react-native';
+import { StyleSheet} from 'react-native';
 import * as React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUser, faMagnifyingGlass, faGamepad } from '@fortawesome/free-solid-svg-icons';
@@ -14,10 +13,7 @@ import Account  from './components/account';
 import Discover from './components/discover';
 import Games from './components/games';
 import Settings from './components/Settings';
-
-import Games from './components/games';
-import Discover from './components/discover';
-import Account from './components/account';
+import GamePreview from './components/gamePreview';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -86,6 +82,7 @@ export default function App() {
           <Stack.Screen name="SignUp" component={SignUp} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Settings" component={Settings}/>
+          <Stack.Screen name="GamePreview" component={GamePreview}/>
         </Stack.Navigator>
       </NavigationContainer>        
   );

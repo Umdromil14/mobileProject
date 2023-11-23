@@ -1,9 +1,14 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 
 export const globalStyles = StyleSheet.create({
 
     container: {
         padding: 20,
+    },
+    containerInsideView: {
+        width: Dimensions.get("window").width - 50,
+        marginTop: 20,
+        alignSelf: "center"
     },
     background : {
         backgroundColor: '#463E3E',
@@ -43,5 +48,24 @@ export const globalStyles = StyleSheet.create({
         height: 50,
         alignSelf: "center",
         marginTop: 25
+    },
+    error : {
+        color : '#cc0000',
+        fontSize : 16,
+        fontWeight : 'bold',
+
+    },
+    greenText: {
+        color : "#59A52C"
+    },
+    whiteText: {
+        color: "#fff"
+    },
+    modifyButtonContainer: {
+        width: 200,
+        alignSelf: "center",
+        marginBottom: 50,
+        marginTop: 15,
+        color: "#59A52C"
     }
 });
