@@ -67,5 +67,11 @@ export const globalStyles = StyleSheet.create({
         marginBottom: 50,
         marginTop: 15,
         color: "#59A52C"
+    },
+    headerBackgroundColor: {
+        backgroundColor: "#443D3D",
+    },
+    containerBorderColor: {
+        borderColor: "#443D3D",
     }
 });

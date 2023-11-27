@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { globalStyles } from "../styles/globalStyles";
 import { getUser, updateUser } from "../APIAccess/user";
+import Header from "./header";
 
 function Account({ navigation }) {
 
@@ -40,16 +41,14 @@ function Account({ navigation }) {
         <View
             style={{
                 flexDirection: "column",
-                flex: 1
+                flex: 1,
             }}
         >
-            <View style={{ backgroundColor: "#443D3D", paddingBottom: 30 }}>
-                <StatusBar backgroundColor={"#443D3D"} hidden={false} />
-                <Image style={globalStyles.tinyLogo} source={logo} />
-            </View>
+            <Header />
             <View
                 style={{
-                    padding: 10,
+                    paddingTop: 10,
+                    paddingBottom: 10,
                     backgroundColor: "#2C2C2C",
                     flex: 1,
                 }}

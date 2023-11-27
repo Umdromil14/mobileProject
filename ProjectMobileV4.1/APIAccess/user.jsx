@@ -135,6 +135,7 @@ async function updateUser(updateValues) {
         );
 
         return response.data;
+
     } catch (error) {
         //! à pas oublier et demander à cyril comment ça fonctionne
     }
