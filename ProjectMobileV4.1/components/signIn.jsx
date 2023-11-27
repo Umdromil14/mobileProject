@@ -119,10 +119,10 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         top: 50,
-        marginBottom: 100,
+        marginBottom: 100
     },
     form: {
-        backgroundColor: "#59A52C",
+        backgroundColor : "#59A52C",
         borderRadius: 20,
         padding: 10,
         height: 231,

@@ -1,7 +1,7 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const APIURL = "http://192.168.129.242:3001";
+const APIURL = "http://192.168.178.62:3001";
 
 async function getToken() {
     try {

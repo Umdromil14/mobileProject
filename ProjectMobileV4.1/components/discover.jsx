@@ -13,10 +13,10 @@ function Discover({ navigation }){
         <View
             style={{
                 flexDirection: 'column',
-                height: Dimensions.get('window').height
+                flex: 1
             }}
         >
-              <View style={{ backgroundColor: '#443D3D', flex: 10 }}>
+              <View style={{ backgroundColor: '#443D3D', paddingBottom: 30}}>
                 <StatusBar
                     backgroundColor={'#443D3D'}
                     hidden={false}
@@ -26,7 +26,11 @@ function Discover({ navigation }){
                     source={logo}
                 />
             </View>
-            <View style={{ backgroundColor: '#2C2C2C', flex: 70, justifyContent: "space-between" }}>
+            <View style={{
+                    padding:10,
+                    backgroundColor: "#2C2C2C",
+                    flex:1,
+                }}>
                 <Pressable onPress={() => {navigation.navigate('GamePreview')}}>
                     <Image source={cod}/>
                 </Pressable>

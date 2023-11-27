@@ -7,6 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+
 import SignUp from './components/signUp';
 import SignIn from './components/signIn';
 import Account from './components/account';
@@ -95,13 +96,4 @@ export default function App() {
         </NavigationContainer>
     );
 }
-
-// TODO remove this
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#443D3D',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-    },
 });

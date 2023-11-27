@@ -1,6 +1,6 @@
 import logo from "../images/logo.png";
 import { InputWithLabel, ValidateButton } from "../tools/AllForForm";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Image,
     View,
@@ -15,23 +15,27 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { globalStyles } from "../styles/globalStyles";
 import { getUser, updateUser } from "../APIAccess/user";
-import { axiosInstance } from "../APIAccess/AxiosInstance";
 import Header from "./header";
 
 function Account({ navigation }) {
-    // TODO use effect to get user
-    getUser().then((response) => {
-        setEmail(response.email);
-        setUsername(response.username);
-        setFirstname(response.firstname);
-        setLastname(response.lastname);
-        return response;
-    });
 
-    const [username, setUsername] = useState();
-    const [firstName, setFirstname] = useState();
-    const [lastName, setLastname] = useState();
-    const [email, setEmail] = useState();
+    const [username, setUsername] = useState("");
+    const [firstname, setFirstname] = useState("");
+    const [lastname, setLastname] = useState("");
+    const [email, setEmail] = useState("");
+
+    useEffect(() => {
+        Promise.all([getUser()])
+            .then((response) => {
+                setUsername(response[0].username);
+                setFirstname(response[0].firstname);
+                setLastname(response[0].lastname);
+                setEmail(response[0].email);
+            })
+            .catch((error) => {
+                console.log(error.message);
+            })
+    }, []);
 
     return (
         <View
@@ -57,7 +61,8 @@ function Account({ navigation }) {
                             { color: "#59A52C", marginTop: 15 },
                         ]}
                         placeholder="Username"
-                        value={username}
+                        value={String(username)}
+                        onChangeText={(text) => setUsername(text)}
                     />
                     <InputWithLabel
                         label="First Name"
@@ -66,7 +71,8 @@ function Account({ navigation }) {
                             { color: "#59A52C" },
                         ]}
                         placeholder="First Name"
-                        value={firstName}
+                        value={String(firstname)}
+                        onChangeText={(text) => setFirstname(text)}
                     />
                     <InputWithLabel
                         label="Last Name"
@@ -75,7 +81,8 @@ function Account({ navigation }) {
                             { color: "#59A52C" },
                         ]}
                         placeholder="Last Name"
-                        value={lastName}
+                        value= {String(lastname)}
+                        onChangeText={(text) => setLastname(text)}
                     />
                     <InputWithLabel
                         label="Email"
@@ -84,12 +91,13 @@ function Account({ navigation }) {
                             { color: "#59A52C" },
                         ]}
                         placeholder="Email"
-                        value={email}
+                        value={String(email)}
+                        onChangeText={(text) => setEmail(text)}
                     />
                     <ValidateButton
                         title="Modify"
                         containerStyle={globalStyles.modifyButtonContainer}
-                        //onPress={updateUser(username, firstName, lastName, email)}
+                        onPress={() => updateUser({username, firstname, lastname, email})}
                     />
                     <Pressable
                         style={{

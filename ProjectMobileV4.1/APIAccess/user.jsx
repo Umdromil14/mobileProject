@@ -5,7 +5,6 @@ import AwesomeAlert from "react-native-awesome-alerts";
 import { cleaningError } from "../tools/isValidForm";
 import { APIURL, getAuthorizationHeader, axiosInstance } from "./AxiosInstance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getToken } from "./AxiosInstance";
 //! vérifier AxiosInstance
 
 async function postUser(user, func, errors) {
@@ -126,21 +125,17 @@ async function getUser() {
 }
 
 //made by ced
-async function updateUser(username, firstName, lastName, email) {
-    const updateValues = {
-        username: username,
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-    };
+async function updateUser(updateValues) {
     try {
+        const Authorization = await getAuthorizationHeader();
         const response = await axiosInstance.patch(
             APIURL + "/user/",
             updateValues,
-            { headers: { Authorization: await getAuthorizationHeader() } }
+            { headers: { Authorization: Authorization } }
         );
 
-        return response;
+        return response.data;
+
     } catch (error) {
         //! à pas oublier et demander à cyril comment ça fonctionne
     }
