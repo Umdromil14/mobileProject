@@ -1,12 +1,9 @@
-import logo from "../images/logo.png";
 import { InputWithLabel, ValidateButton } from "../tools/AllForForm";
 import { useEffect, useState } from "react";
 import {
-    Image,
     View,
     StyleSheet,
     Pressable,
-    StatusBar,
     Dimensions,
     Text,
     ScrollView,
@@ -28,8 +25,12 @@ function Account({ navigation }) {
         Promise.all([getUser()])
             .then((response) => {
                 setUsername(response[0].username);
-                setFirstname(response[0].firstname);
-                setLastname(response[0].lastname);
+                if(response[0].firstname){
+                    setFirstname(response[0].firstname);
+                }
+                if(response[0].lastname){
+                    setLastname(response[0].lastname);
+                }
                 setEmail(response[0].email);
             })
             .catch((error) => {

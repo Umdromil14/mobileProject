@@ -7,7 +7,7 @@ import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
  * @param {number=} id the id of the video game
  * @param {string=} name the name of the video game
  *
- * @returns {Array} Array of video games
+ * @returns {Promise<Array>} Array of video games
  *
  * @throws {Error} if the request failed
  */
