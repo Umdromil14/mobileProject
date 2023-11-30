@@ -6,9 +6,9 @@ export const globalStyles = StyleSheet.create({
         padding: 20,
     },
     containerInsideView: {
-        width: Dimensions.get("window").width - 50,
         marginTop: 20,
-        alignSelf: "center"
+        alignSelf: "center",
+        flexDirection:'row'
     },
     background : {
         backgroundColor: '#463E3E',
@@ -67,5 +67,11 @@ export const globalStyles = StyleSheet.create({
         marginBottom: 50,
         marginTop: 15,
         color: "#59A52C"
+    },
+    headerBackgroundColor: {
+        backgroundColor: "#443D3D",
+    },
+    containerBorderColor: {
+        borderColor: "#443D3D",
     }
 });
