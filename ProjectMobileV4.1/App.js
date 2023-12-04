@@ -3,7 +3,7 @@ import * as React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUser, faMagnifyingGlass, faGamepad } from '@fortawesome/free-solid-svg-icons';
 
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -84,8 +84,15 @@ function Home() {
 }
 
 export default function App() {
+    const MyTheme ={
+        dark:true,
+        colors:{
+            background:'#181818',
+        }
+    }
+
     return (
-        <NavigationContainer>
+        <NavigationContainer theme={MyTheme}>
             <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="SignIn" component={SignIn} />
                 <Stack.Screen name="SignUp" component={SignUp} />

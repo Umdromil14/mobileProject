@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable, StyleSheet, ScrollView, FlatList, Linking, TextInput } from "react-native";
+import { View, Text, Image, Pressable, StyleSheet, ScrollView, FlatList, Linking, TextInput, SafeAreaView,KeyboardAvoidingView } from "react-native";
 import { globalStyles } from "../styles/globalStyles";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -85,126 +85,98 @@ function GamePreview({ route, navigation }) {
     };
 
     return (
-        <View
-            style={{
-                flexDirection: "column",
-                flexGrow: 1
-            }}
-        >
-            {/* <Header /> */}
-            <View
-                style={{
-                    padding: 10,
-                    backgroundColor: DARK_GREY,
-                    flexGrow: 1
-                }}
-            >
-                {/* <View style={{ flexDirection: 'row' }}>
-                    <Pressable onPress={navigation.goBack}>
-                        <FontAwesomeIcon icon={faArrowLeft} size={40} style={{ color: GREEN }} />
-                    </Pressable>
-                    <Text style={[globalStyles.whiteText, { marginLeft: 12, marginTop: 2 }, styles.name]}>{gamePreview.name}</Text>
-                </View> */}
-                {/* <View style={{height: heightScroll}}> */}
-                    <ScrollView onLayout={(e) => setHeightScroll(e.nativeEvent.layout.height)} contentContainerStyle={{height: heightScroll}}>
-                        <View onLayout={(e) => { setMinHeight(e.nativeEvent.layout.height) }} style={globalStyles.containerInsideView}>
-                            <Image style={{ maxHeight: 210, width: 142, marginLeft: 14 }} source={images[videoGameId]} />
-                            <View style={{ flexDirection: 'column', marginLeft: 18, maxWidth: 142 }}>
-                                <Text style={[globalStyles.greenText, styles.informationsTitle]}>Release date (D/M/Y)</Text>
-                                <Text style={[globalStyles.whiteText, styles.informationsText]}>{gamePreview.releaseDate}</Text>
-                                <Text style={[globalStyles.greenText, styles.informationsTitle]}>Release price</Text>
-                                <Text style={[globalStyles.whiteText, styles.informationsText]}>{gamePreview.releasePrice}</Text>
-                                <Text style={[globalStyles.greenText, styles.informationsTitle]}>Platforms</Text>
-                                <FlatList
-                                    data={gamePreview.platforms}
-                                    renderItem={({ item }) => {
-                                        let boldPlatform = "normal";
-                                        let underlined = "none";
-                                        if (item.code === actualPlatform) {
-                                            boldPlatform = "bold";
-                                        }
-                                        else {
-                                            underlined = "underline";
-                                        }
-                                        return (
-                                            <Pressable onPress={() => { navigation.setParams({ actualPlatform: item.code }) }}>
-                                                <Text
-                                                    style={[
-                                                        globalStyles.whiteText,
-                                                        styles.informationsText,
-                                                        {
-                                                            marginRight: 5,
-                                                            fontWeight: boldPlatform,
-                                                            textDecorationLine: underlined
-                                                        }]}
-                                                >
-                                                    {item.abbreviation},
-                                                </Text>
-                                            </Pressable>
-                                        )
-                                    }}
-                                    horizontal={true} />
-                                <OpenURLButton url={gamePreview.storeUrl} />
-                            </View>
-                        </View>
-                        <View style={{ marginTop: 20, flexGrow:1}}>
-                            <Tab value={index} onChange={(e) => setIndex(e)} indicatorStyle={{ backgroundColor: GREEN }}>
-                                <Tab.Item
-                                    title={"Synopsis"}
-                                    titleStyle={(active) => ({
-                                        color: active ? GREEN : "#fff",
-                                        fontSize: 24,
-                                        fontWeight: "bold"
-                                    })} />
-                                <Tab.Item
-                                    title={"My review"}
-                                    titleStyle={(active) => ({
-                                        color: active ? GREEN : "#fff",
-                                        fontSize: 24,
-                                        fontWeight: "bold"
-                                    })} />
-                            </Tab>
-                            <TabView value={index} onChange={setIndex} animationType="spring">
-                                <TabView.Item style={{ width: '100%' }}>
-                                    <View>
-                                        <Text style={styles.textStyle}>{gamePreview.synopsis}</Text>
-                                    </View>
-                                </TabView.Item>
-                                <TabView.Item
-                                    style={{ width: '100%', flexGrow: 1 }}>
-                                    <View style={{ paddingTop: 10, flexGrow:1 }}>
-                                        <AirbnbRating
-                                            showRating={false}
-                                            size={30}
-                                            defaultRating={rating}
-
-                                        />
-                                        <TextInput
-                                            value={comment ? comment : "My comment"}
-                                            style={[styles.textStyle, styles.commentSection, {flexGrow:1}]}
-                                            multiline={true}
-                                            onChangeText={(text) => setComment(text)}
-                                            onContentSizeChange={(e) => {
-                                                const newHeight = e.nativeEvent.contentSize.height + minHeight;
-                                                if (newHeight != lastHeight) {
-                                                    handleHeightScroll(newHeight);
-                                                    // setLastHeight(newHeight);
-                                                }
-                                            }}
-                                        />
-                                        <ValidateButton
-                                            title={"Modify"}
-                                            containerStyle={[globalStyles.modifyButtonContainer, { marginBottom: 10 }]}
-                                        />
-                                    </View>
-                                </TabView.Item>
-                            </TabView>
-                        </View>
-                    </ScrollView>
-                {/* </View> */}
-
+        <>
+            <View style={{ flexDirection: 'row'}}>
+                <Pressable onPress={navigation.goBack}>
+                    <FontAwesomeIcon icon={faArrowLeft} size={40} style={{ color: GREEN }} />
+                </Pressable>
+                <Text style={[globalStyles.whiteText, { marginLeft: 12, marginTop: 2 }, styles.name]}>{gamePreview.name}</Text>
             </View>
-        </View>
+            <View style={[globalStyles.containerInsideView]}>
+                <Image style={{ maxHeight: 210, width: 142, marginLeft: 14 }} source={images[videoGameId]} />
+                <View style={{ flexDirection: 'column', marginLeft: 18, maxWidth: 142 }}>
+                    <Text style={[globalStyles.greenText, styles.informationsTitle]}>Release date (D/M/Y)</Text>
+                    <Text style={[globalStyles.whiteText, styles.informationsText]}>{gamePreview.releaseDate}</Text>
+                    <Text style={[globalStyles.greenText, styles.informationsTitle]}>Release price</Text>
+                    <Text style={[globalStyles.whiteText, styles.informationsText]}>{gamePreview.releasePrice}</Text>
+                    <Text style={[globalStyles.greenText, styles.informationsTitle]}>Platforms</Text>
+                    <FlatList
+                        data={gamePreview.platforms}
+                        renderItem={({ item }) => {
+                            let boldPlatform = "normal";
+                            let underlined = "none";
+                            if (item.code === actualPlatform) {
+                                boldPlatform = "bold";
+                            }
+                            else {
+                                underlined = "underline";
+                            }
+                            return (
+                                <Pressable onPress={() => { navigation.setParams({ actualPlatform: item.code }) }}>
+                                    <Text
+                                        style={[
+                                            globalStyles.whiteText,
+                                            styles.informationsText,
+                                            {
+                                                marginRight: 5,
+                                                fontWeight: boldPlatform,
+                                                textDecorationLine: underlined
+                                            }]}
+                                    >
+                                        {item.abbreviation},
+                                    </Text>
+                                </Pressable>
+                            )
+                        }}
+                        horizontal={true} />
+                    <OpenURLButton url={gamePreview.storeUrl} />
+                </View>
+            </View>
+            <Tab value={index} onChange={(e) => setIndex(e)} indicatorStyle={{ backgroundColor: GREEN }}>
+                <Tab.Item
+                    title={"Synopsis"}
+                    titleStyle={(active) => ({
+                        color: active ? GREEN : "#fff",
+                        fontSize: 24,
+                        fontWeight: "bold"
+                    })} />
+                <Tab.Item
+                    title={"My review"}
+                    titleStyle={(active) => ({
+                        color: active ? GREEN : "#fff",
+                        fontSize: 24,
+                        fontWeight: "bold"
+                    })} />
+            </Tab>
+            <TabView value={index} onChange={setIndex} animationType="spring">
+                <TabView.Item style={{ width: '100%'}}>
+                    <ScrollView contentContainerStyle={{padding:20}}>
+                        <Text style={styles.textStyle}>{gamePreview.synopsis}</Text>
+                    </ScrollView>
+                </TabView.Item>
+                <TabView.Item style={{ width: '100%'}}>
+                    <SafeAreaView>
+                        <AirbnbRating
+                            showRating={false}
+                            size={30}
+                            defaultRating={rating}
+                        />
+                        <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={350} contentContainerStyle={{backgroundColor:DARK_GREY, paddingTop:20, width:'100%'}}>
+                            <TextInput
+                                value={comment ? comment : "My comment lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum "}
+                                style={[styles.textStyle, styles.commentSection]}
+                                multiline={true}
+                                onChangeText={(text) => setComment(text)}
+                            />
+                            <ValidateButton
+                                title={"Modify"}
+                                containerStyle={[globalStyles.modifyButtonContainer]}
+                            />
+                        </KeyboardAvoidingView>
+                    </SafeAreaView>
+                </TabView.Item>
+            </TabView>
+        </>
     );
 }
 

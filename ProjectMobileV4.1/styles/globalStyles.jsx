@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from "react-native";
+import { DARK_GREY, GREEN, LIGHT_GREY } from "../tools/constants"
 
 export const globalStyles = StyleSheet.create({
 
@@ -6,9 +7,11 @@ export const globalStyles = StyleSheet.create({
         padding: 20,
     },
     containerInsideView: {
-        marginTop: 20,
+        paddingTop: 20,
+        width:'100%',
         alignSelf: "center",
-        flexDirection:'row'
+        justifyContent:'center',
+        flexDirection:'row',
     },
     background : {
         backgroundColor: '#463E3E',
