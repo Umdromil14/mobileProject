@@ -1,13 +1,19 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet } from "react-native";
 
 export const globalStyles = StyleSheet.create({
 
+    centered: {
+        alignSelf: "center",
+        justifyContent: "center"
+    },
     container: {
         padding: 20,
     },
     containerInsideView: {
-        marginTop: 20,
+        paddingTop: 20,
+        width: "100%",
         alignSelf: "center",
+        justifyContent: "center",
         flexDirection:'row'
     },
     background : {

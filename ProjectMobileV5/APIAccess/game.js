@@ -6,7 +6,7 @@ import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
  *
  * @param {number=} publicationId the id of the publication; if not specified, all games are returned
  *
- * @returns {Array} Array of games
+ * @returns {Promise<Array>} Array of games
  *
  * @throws {Error} if the request failed
  */
@@ -19,4 +19,18 @@ async function getGames(publicationId) {
     return response.data;
 }
 
-export { getGames };
+async function updateGame(publicationId, updateValues){
+    try{
+        const Authorization = await getAuthorizationHeader();
+        const response = await axiosInstance.patch(`${APIURL}/game/user/${publicationId}`, updateValues, 
+            {headers: { Authorization: Authorization },
+        });
+        return response.data;
+    }
+    catch(error){
+        console.log(error.request);
+    }
+    
+}
+
+export { getGames, updateGame };

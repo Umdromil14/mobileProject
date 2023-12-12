@@ -31,7 +31,7 @@ function Discover({ navigation }){
                     backgroundColor: "#2C2C2C",
                     flex:1,
                 }}>
-                <Pressable onPress={() => {navigation.navigate('GamePreview')}}>
+                <Pressable onPress={() => {navigation.navigate('GamePreview', {videoGameId: 1, actualPlatform: "PC"})}}>
                     <Image source={cod}/>
                 </Pressable>
             </View>

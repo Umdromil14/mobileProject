@@ -1,12 +1,9 @@
-import logo from "../images/logo.png";
 import { InputWithLabel, ValidateButton } from "../tools/AllForForm";
 import { useEffect, useState } from "react";
 import {
-    Image,
     View,
     StyleSheet,
     Pressable,
-    StatusBar,
     Dimensions,
     Text,
     ScrollView,
@@ -16,8 +13,15 @@ import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { globalStyles } from "../styles/globalStyles";
 import { getUser, updateUser } from "../APIAccess/user";
 import Header from "./header";
+import { DARK_GREY, GREEN } from "../tools/constants";
 
+/**
+ * Account page displaying the data of the user
+ *
+ * @returns {JSX.Element} header of the application
+ */
 function Account({ navigation }) {
+
     // TODO utiliser un objet pour les infos
     const [username, setUsername] = useState("");
     const [firstname, setFirstname] = useState("");
@@ -28,12 +32,15 @@ function Account({ navigation }) {
         getUser()
             .then((response) => {
                 setUsername(response.username);
-                setFirstname(response.firstname);
-                setLastname(response.lastname);
+                if(response.firstname){
+                    setFirstname(response.firstname);
+                }
+                if(response.lastname){
+                    setLastname(response.lastname);
+                }
                 setEmail(response.email);
             })
             .catch((error) => {
-                // TODO afficher une erreur correctement
                 console.log(error.message);
             })
     }, []);
@@ -50,7 +57,7 @@ function Account({ navigation }) {
                 style={{
                     paddingTop: 10,
                     paddingBottom: 10,
-                    backgroundColor: "#2C2C2C",
+                    backgroundColor: DARK_GREY,
                     flex: 1,
                 }}
             >
@@ -59,7 +66,7 @@ function Account({ navigation }) {
                         label="Username"
                         labelStyle={[
                             globalStyles.textForm,
-                            { color: "#59A52C", marginTop: 15 },
+                            { color: GREEN, marginTop: 15 },
                         ]}
                         placeholder="Username"
                         value={String(username)}
@@ -69,7 +76,7 @@ function Account({ navigation }) {
                         label="First Name"
                         labelStyle={[
                             globalStyles.textForm,
-                            { color: "#59A52C" },
+                            { color: GREEN },
                         ]}
                         placeholder="First Name"
                         value={String(firstname)}
@@ -79,7 +86,7 @@ function Account({ navigation }) {
                         label="Last Name"
                         labelStyle={[
                             globalStyles.textForm,
-                            { color: "#59A52C" },
+                            { color: GREEN },
                         ]}
                         placeholder="Last Name"
                         value= {String(lastname)}
@@ -89,7 +96,7 @@ function Account({ navigation }) {
                         label="Email"
                         labelStyle={[
                             globalStyles.textForm,
-                            { color: "#59A52C" },
+                            { color: GREEN },
                         ]}
                         placeholder="Email"
                         value={String(email)}
@@ -115,9 +122,9 @@ function Account({ navigation }) {
                         <FontAwesomeIcon
                             icon={faGear}
                             size={30}
-                            style={{ color: "#59A52C" }}
+                            style={{ color: GREEN }}
                         />
-                        <Text style={{ color: "#59A52C", fontSize: 20 }}>
+                        <Text style={{ color: GREEN, fontSize: 20 }}>
                             Settings
                         </Text>
                     </Pressable>

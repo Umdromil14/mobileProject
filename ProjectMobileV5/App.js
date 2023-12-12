@@ -10,12 +10,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SignUp from './components/signUp';
 import SignIn from './components/signIn';
 import Account from './components/account';
-import Discover from './components/discover';
+import DiscoverNav from './components/discoverNav';
 import Games from './components/GameSearch/Games';
-// import Games from './components/games';
 import Settings from './components/Settings';
 import GamePreview from './components/gamePreview';
-import { DARK_GREY, GREEN, LIGHT_GREY } from "./tools/constants";
+import { DARK_GREY, GREEN, LIGHT_GREY } from "./tools/constants"
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -23,15 +22,12 @@ const Tab = createBottomTabNavigator();
 function Home() {
     return (
         <Tab.Navigator
-            initialRouteName="Discover"
+            initialRouteName="DiscoverNav"
             screenOptions={{
                 headerShown: false,
                 tabBarInactiveTintColor: "white",
-                // tabBarActiveTintColor: "#59A52C",
                 tabBarActiveTintColor: GREEN,
-                // tabBarActiveBackgroundColor: "#5F5757",
                 tabBarActiveBackgroundColor: LIGHT_GREY,
-                // tabBarInactiveBackgroundColor: "#1A1717",
                 tabBarInactiveBackgroundColor: DARK_GREY,
                 tabBarHideOnKeyboard: true,
                 tabBarStyle: {
@@ -64,8 +60,8 @@ function Home() {
                     tabBarLabel: "DISCOVER",
                     tabBarIcon: ({ color }) => (<FontAwesomeIcon icon={faMagnifyingGlass} size={24} style={{ color: color }} />)
                 }}
-                name="Discover"
-                component={Discover}
+                name="DiscoverNav"
+                component={DiscoverNav}
             />
             <Tab.Screen
                 initialParams={{
@@ -84,8 +80,14 @@ function Home() {
 }
 
 export default function App() {
+    const MyTheme = {
+        dark:true,
+        colors:{
+            background:DARK_GREY
+        }
+    }
     return (
-        <NavigationContainer>
+        <NavigationContainer theme={MyTheme}>
             <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="SignIn" component={SignIn} />
                 <Stack.Screen name="SignUp" component={SignUp} />

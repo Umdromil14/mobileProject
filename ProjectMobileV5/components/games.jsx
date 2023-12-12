@@ -337,7 +337,6 @@ function VideoGamesFlatList({ videoGames }) {
         />
     );
 }
-
 function GenresFlatList({
     genres,
     selectedGenres,

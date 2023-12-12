@@ -5,6 +5,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faArrowRightFromBracket, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { deleteUser } from "../APIAccess/user";
 
+/**
+ * Settings of the application
+ *
+ * @returns {JSX.Element} settings of the application
+ */
 function Settings({ navigation }) {
     return (
         <View

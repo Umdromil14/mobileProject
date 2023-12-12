@@ -13,7 +13,7 @@ import { getCategory } from "./category";
  * @param {boolean=} getOwnGames if `true`, only the games of the user are returned; default `false`
  * @param {boolean=} getVideoGameInfo if `true`, the video game info is returned accessible with the key `video_game`; default `false`
  *
- * @returns {Array} Array of games (keys: `id`, `platform_code`, `video_game_id`, `release_date`, `release_price`, `store_page_url`)
+ * @returns {Promise<Array>} Array of games (keys: `id`, `platform_code`, `video_game_id`, `release_date`, `release_price`, `store_page_url`)
  *
  * @throws {Error} if the request failed
  */
@@ -64,7 +64,7 @@ async function getPublications(
  *
  * @param {boolean=} getOwnGames if `true`, only the games of the user are returned; default `false`
  *
- * @returns {VideoGame[]} Array of video games (keys: `id`, `name`, `description`, `platforms`, `typesIds`)
+ * @returns {Promise<VideoGame[]>} Array of video games (keys: `id`, `name`, `description`, `platforms`, `typesIds`)
  *
  * @throws {Error} if the request failed
  */

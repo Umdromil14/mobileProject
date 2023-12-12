@@ -6,7 +6,7 @@ import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
  *
  * @param {number=} publicationId the id of the publication; if not specified, all games are returned
  *
- * @returns {Array} Array of games
+ * @returns {Promise<Array>} Array of games
  *
  * @throws {Error} if the request failed
  */
