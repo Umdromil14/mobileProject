@@ -22,22 +22,23 @@ import { DARK_GREY, GREEN } from "../tools/constants";
  */
 function Account({ navigation }) {
 
+    // TODO utiliser un objet pour les infos
     const [username, setUsername] = useState("");
     const [firstname, setFirstname] = useState("");
     const [lastname, setLastname] = useState("");
     const [email, setEmail] = useState("");
 
     useEffect(() => {
-        Promise.all([getUser()])
+        getUser()
             .then((response) => {
-                setUsername(response[0].username);
-                if(response[0].firstname){
-                    setFirstname(response[0].firstname);
+                setUsername(response.username);
+                if(response.firstname){
+                    setFirstname(response.firstname);
                 }
-                if(response[0].lastname){
-                    setLastname(response[0].lastname);
+                if(response.lastname){
+                    setLastname(response.lastname);
                 }
-                setEmail(response[0].email);
+                setEmail(response.email);
             })
             .catch((error) => {
                 console.log(error.message);

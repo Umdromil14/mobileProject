@@ -5,11 +5,13 @@ const LIGHT_GREY = "#1f1f1f";
 // const DARK_GREY = "#2C2C2C";
 const DARK_GREY = "#181818";
 const GREEN = "#59A52C";
+const LOAD_SIZE = 70;
 
 export {
-    HEADER_HEIGHT  ,
+    HEADER_HEIGHT,
     TAB_NAVIGATOR_HEIGHT,
     LIGHT_GREY,
     DARK_GREY,
     GREEN,
+    LOAD_SIZE
 };

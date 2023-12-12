@@ -1,5 +1,5 @@
 import axios from "axios";
-import { APIURL, getAuthorizationHeader, axiosInstance } from "./AxiosInstance";
+import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
 
 /**
  * Get games of the user

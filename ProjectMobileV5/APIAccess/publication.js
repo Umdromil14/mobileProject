@@ -1,54 +1,35 @@
 import axios from "axios";
 import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
-import { getVideoGames } from "./videoGame";
 import { getCategory } from "./category";
 
 /**
  * Get publications
  *
- * @param {number=} publicationId the id of the publication
- * @param {number=} videoGameId the id of the video game
- * @param {string=} videoGameName the name of the video game
- * @param {string=} platformCode the code of the platform
- * @param {boolean=} getOwnGames if `true`, only the games of the user are returned; default `false`
- * @param {boolean=} getLastGames if `true`, only the games younger than 3months old are returned; default `false`
- * @param {boolean=} getVideoGameInfo if `true`, the video game info is returned accessible with the key `video_game`; default `false`
+ * @param {Object} options
+ * @param {number=} options.publicationId the id of the publication
+ * @param {number=} options.videoGameId the id of the video game
+ * @param {string=} options.videoGameName the name of the video game
+ * @param {string=} options.platformCode the platform code of the video game
+ * @param {boolean=} options.getOwnGames if `true`, only the games of the user are returned; default `false`
+ * @param {number[]=} options.genresIds the genres of the video game
+ * @param {boolean=} options.getLastGames if `true`, only the last games are returned; default `false`
+ * @param {boolean=} options.getVideoGamesInfo if `true`, the video game info is returned; default `false`
+ * @param {boolean=} options.alphabetical if `true`, the publications are sorted alphabetically; default `false`
+ * @param {number=} options.page the page of the results
+ * @param {number=} options.limit the number of results per page
  *
- * @returns {Promise<Array>} Array of games (keys: `id`, `platform_code`, `video_game_id`, `release_date`, `release_price`, `store_page_url`)
+ * @returns {Promise<Object[]>} A promise containing an array of publications
  *
  * @throws {Error} if the request failed
  */
-async function getPublications(
-    publicationId,
-    videoGameId,
-    videoGameName,
-    platformCode,
-    getOwnGames = false,
-    getLastGames = false,
-    getVideoGameInfo = false
-) {
+async function getPublications(options) {
     const Authorization = await getAuthorizationHeader();
     const response = await axios.get(`${APIURL}/publication`, {
         headers: { Authorization: Authorization },
-        params: {
-            publicationId,
-            videoGameId,
-            videoGameName,
-            platformCode,
-            getOwnGames,
-            getLastGames
-        },
+        params: { options },
+        body: { genres_ids: options.genresIds },
     });
     const publications = response.data;
-
-    if (getVideoGameInfo) {
-        const videoGames = await getVideoGames();
-        publications.forEach((publication) => {
-            publication.video_game = videoGames.find(
-                (videoGame) => videoGame.id === publication.video_game_id
-            );
-        });
-    }
 
     return publications;
 }
@@ -59,30 +40,42 @@ async function getPublications(
  * @property {string} name the name of the video game
  * @property {string} description the description of the video game
  * @property {string[]} platforms the platforms of the video game
- * @property {number[]} typesIds the types of the video game
+ * @property {number[]} genresIds the genres of the video game
  */
 
+// TODO promise return
 /**
  * Get all video games with their platforms and genres
  *
+ * @param {string=} platformCode the platform code of the video game
+ * @param {number[]=} genresIds the genres of the video game
+ * @param {string=} videoGameName the name of the video game
  * @param {boolean=} getOwnGames if `true`, only the games of the user are returned; default `false`
+ * @param {number=} page the page of the results
+ * @param {number=} limit the number of results per page
  *
- * @returns {Promise<VideoGame[]>} Array of video games (keys: `id`, `name`, `description`, `platforms`, `typesIds`)
+ * @returns {Promise<VideoGame[]>} A promise containing an array of video games (keys: `id`, `name`, `description`, `platforms`, `genresIds`)
  *
  * @throws {Error} if the request failed
  */
-async function getVideoGamesWithPlatformsAndGenres(getOwnGames = false) {
+async function getVideoGamesWithPlatformsAndGenres(
+    platformCode,
+    videoGameName,
+    genresIds,
+    getOwnGames = false,
+    page,
+    limit
+) {
     const videoGames = [];
     const categories = await getCategory();
-    const publications = await getPublications(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
+    const publications = await getPublications({
+        platformCode,
+        videoGameName,
+        genresIds,
         getOwnGames,
-        undefined,
-        true
-    );
+        page,
+        limit,
+    });
     publications.forEach((publication) => {
         const videoGame = videoGames.find(
             (videoGame) => videoGame.id === publication.video_game_id
@@ -91,16 +84,16 @@ async function getVideoGamesWithPlatformsAndGenres(getOwnGames = false) {
             videoGame.platforms.push(publication.platform_code);
         } else {
             videoGames.push({
-                id: publication.video_game.id,
-                name: publication.video_game.name,
-                description: publication.video_game.description,
+                id: publication.video_game_id,
+                name: publication.name,
+                description: publication.description,
                 platforms: [publication.platform_code],
-                typesIds: categories
+                genresIds: categories
                     .filter(
                         (category) =>
-                            category.video_game_id === publication.video_game.id
+                            category.video_game_id === publication.video_game_id
                     )
-                    .map((category) => category.type_id),
+                    .map((category) => category.genre_id),
             });
         }
     });

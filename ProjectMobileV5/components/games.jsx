@@ -23,10 +23,10 @@ import {
     faFilter,
 } from "@fortawesome/free-solid-svg-icons";
 import { globalStyles } from "../styles/globalStyles";
-import { Icon, Button, SearchBar } from "@rneui/themed";
+import { Icon, Button } from "@rneui/themed";
 import { getVideoGamesWithPlatformsAndGenres } from "../APIAccess/publication";
 import { getPlatforms } from "../APIAccess/platform";
-import { getTypes } from "../APIAccess/type";
+import { getGenres } from "../APIAccess/genre";
 import images from "../images/image";
 import Header from "./header";
 import {
@@ -59,6 +59,10 @@ function Games({ navigation }) {
     const [selectedGenres, setSelectedGenres] = useState([]);
     const [genres, setGenres] = useState([]);
     const [videoGames, setVideoGames] = useState([]);
+    const [selectedFilter, setSelectedFilter] = useState({
+        platform: "PC",
+        genres: [],
+    });
 
     const [load, setLoad] = useState({
         loading: true,
@@ -81,11 +85,11 @@ function Games({ navigation }) {
     const getFilteredGames = () => {
         return videoGames.filter(
             (videoGame) =>
-                videoGame.platforms.includes(selectedPlatform) &&
+                videoGame.platforms.includes(selectedFilter.platform) &&
                 videoGame.name.toLowerCase().includes(search.toLowerCase()) &&
-                (selectedGenres.length === 0 ||
-                    selectedGenres.some((selectedGenre) =>
-                        videoGame.typesIds.includes(selectedGenre)
+                (selectedFilter.genres.length === 0 ||
+                    selectedFilter.genres.every((genre) =>
+                        videoGame.genresIds.includes(genre)
                     ))
         );
     };
@@ -103,14 +107,14 @@ function Games({ navigation }) {
         Content = (
             <View style={{ width: "100%", paddingTop: 10 }}>
                 <Modal
-                    animationType="slide"
+                    animationGenre="slide"
                     transparent={true}
                     visible={isBottomSheetOpen}
                     onRequestClose={() => {
                         setIsBottomSheetOpen(!isBottomSheetOpen);
                     }}
                 >
-                    <View style={styles.bottomSheet}>
+                    <View style={styles.modal}>
                         <View
                             style={[
                                 styles.modalBox,
@@ -119,13 +123,13 @@ function Games({ navigation }) {
                                 },
                             ]}
                         >
-                            <Text style={styles.modalText}>Platforms</Text>
+                            <Text style={styles.modalTitle}>Platforms</Text>
                             <FlatList
                                 data={platforms}
                                 horizontal={true}
                                 renderItem={({ item }) => (
                                     <Button
-                                        title={item.code}
+                                        title={item.abbreviation}
                                         onPress={() => {
                                             setSelectedPlatform(item.code);
                                         }}
@@ -151,89 +155,13 @@ function Games({ navigation }) {
                                 },
                             ]}
                         >
-                            <Text style={styles.modalText}>Genres</Text>
-                            <FlatList
-                                data={genres}
-                                numColumns="3"
-                                renderItem={({ item }) => (
-                                    // <Button
-                                    //     title={item.name}
-                                    //     onPress={() => {
-                                    //         handleSelectedGenresChange(item.id);
-                                    //     }}
-                                    //     buttonStyle={[
-                                    //         styles.modalFlatListButton,
-                                    //         {
-                                    //             backgroundColor:
-                                    //                 selectedGenres.includes(
-                                    //                     item.id
-                                    //                 )
-                                    //                     ? GREEN
-                                    //                     : LIGHT_GREY,
-                                    //         },
-                                    //     ]}
-                                    //     titleStyle={{
-                                    //         fontSize: 12,
-                                    //     }}
-                                    // />
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            handleSelectedGenresChange(item.id);
-                                        }}
-                                        style={
-                                            {
-                                                // borderRadius: 5,
-                                                // styles.modalFlatListButton,
-                                                // {
-                                                //     backgroundColor:
-                                                //         selectedGenres.includes(
-                                                //             item.id
-                                                //         )
-                                                //             ? GREEN
-                                                //             : LIGHT_GREY,
-                                                // },
-                                            }
-                                        }
-                                    >
-                                        <ModalButton
-                                            title={item.name}
-                                            backgroundColor={
-                                                selectedGenres.includes(item.id)
-                                                    ? "rgba(89, 165, 44, 0.5)"
-                                                    : "transparent"
-                                            }
-                                        />
-                                        {/* <Image
-                                            source={require("../images/button/openWorld.jpg")}
-                                            style={{
-                                                width: MODAL_FLATLIST_ITEM_WIDTH,
-                                                height: MODAL_FLATLIST_ITEM_HEIGHT,
-                                                borderRadius: 5,
-                                            }}
-                                        />
-                                        <View
-                                            style={{
-                                                position: "absolute",
-                                                top: 0,
-                                                left: 0,
-                                                right: 0,
-                                                bottom: 0,
-                                                justifyContent: "center",
-                                                alignItems: "center",
-                                            }}
-                                        >
-                                            <Text
-                                                style={{
-                                                    fontSize: 12,
-                                                    color: "#ffffff",
-                                                    fontWeight: "bold",
-                                                }}
-                                            >
-                                                {item.name}
-                                            </Text>
-                                        </View> */}
-                                    </TouchableOpacity>
-                                )}
+                            <Text style={styles.modalTitle}>Genres</Text>
+                            <GenresFlatList
+                                genres={genres}
+                                selectedGenres={selectedGenres}
+                                handleSelectedGenresChange={
+                                    handleSelectedGenresChange
+                                }
                             />
                         </View>
                         <View
@@ -268,6 +196,10 @@ function Games({ navigation }) {
                                 title="APPLY"
                                 onPress={() => {
                                     setIsBottomSheetOpen(!isBottomSheetOpen);
+                                    setSelectedFilter({
+                                        platform: selectedPlatform,
+                                        genres: selectedGenres,
+                                    });
                                 }}
                                 buttonStyle={[
                                     styles.modalButton,
@@ -301,15 +233,6 @@ function Games({ navigation }) {
                             borderRadius: 20,
                             width: FILTER_BUTTON_WIDTH,
                         }}
-                        icon={
-                            <Icon
-                                name="options-sharp"
-                                type="ionicon"
-                                size={20}
-                                color="white"
-                                style={{ marginRight: 8 }}
-                            />
-                        }
                     />
                 </View>
             </View>
@@ -319,23 +242,12 @@ function Games({ navigation }) {
     useEffect(() => {
         Promise.all([
             getPlatforms(),
-            getTypes(),
+            getGenres(),
             getVideoGamesWithPlatformsAndGenres(),
         ])
             .then((response) => {
                 setPlatforms(response[0]);
                 setGenres(response[1]);
-                // let videoGames = [];
-                // for (let i = 0; i < 1000000; i++) {
-                //     videoGames.push({
-                //         id: i,
-                //         name: "Game " + i,
-                //         platforms: ["PC"],
-                //         typesIds: [1],
-                //     });
-                // }
-                // console.log(videoGames.length);
-                // setVideoGames(videoGames);
                 setVideoGames(response[2].slice(0, 24));
 
                 setLoad({
@@ -425,37 +337,61 @@ function VideoGamesFlatList({ videoGames }) {
         />
     );
 }
-
-function ModalButton({ title, backgroundColor }) {
+function GenresFlatList({
+    genres,
+    selectedGenres,
+    handleSelectedGenresChange,
+}) {
     return (
-        <View>
-            <ImageBackground
-                source={require("../images/button/openWorld.jpg")}
-                style={[
-                    styles.modalFlatListButton,
-                    {
-                        flex: 1,
-                        justifyContent: "center",
-                    },
-                ]}
-                imageStyle={{
-                    borderRadius: 5,
-                }}
-            >
-                <Text
-                    style={{
-                        fontSize: 12,
-                        color: "#ffffff",
-                        fontWeight: "bold",
-                        textAlign: "center",
-                        // backgroundColor: "rgba(0,0,0,0.5)",
-                        backgroundColor: backgroundColor,
+        <FlatList
+            data={genres}
+            numColumns="3"
+            renderItem={({ item }) => (
+                <TouchableOpacity
+                    onPress={() => {
+                        handleSelectedGenresChange(item.id);
                     }}
                 >
-                    {title}
-                </Text>
-            </ImageBackground>
-        </View>
+                    <ImageBackground
+                        source={require("../images/button/openWorld.jpg")}
+                        style={[
+                            styles.modalFlatListButton,
+                            {
+                                flex: 1,
+                                justifyContent: "center",
+                            },
+                        ]}
+                        imageStyle={{
+                            borderRadius: 5,
+                        }}
+                    >
+                        <View
+                            style={{
+                                ...StyleSheet.absoluteFillObject,
+                                backgroundColor: selectedGenres.includes(
+                                    item.id
+                                )
+                                    ? "rgba(89, 165, 44, 0.5)"
+                                    : "transparent",
+                            }}
+                        />
+                        <Text
+                            style={{
+                                fontSize: 12,
+                                color: "#ffffff",
+                                fontWeight: "bold",
+                                textAlign: "center",
+                            }}
+                        >
+                            {item.name}
+                        </Text>
+                    </ImageBackground>
+                </TouchableOpacity>
+            )}
+            ListEmptyComponent={
+                <ErrorText errorMessage="It seems that no genres have been found" />
+            }
+        />
     );
 }
 
@@ -478,7 +414,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
-    bottomSheet: {
+    modal: {
         height: 465,
         position: "absolute",
         left: 0,
@@ -497,7 +433,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: "grey",
     },
-    modalText: {
+    modalTitle: {
         color: "#ffffff",
         fontSize: 18,
         fontWeight: "bold",

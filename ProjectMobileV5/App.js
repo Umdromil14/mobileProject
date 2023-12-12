@@ -11,7 +11,7 @@ import SignUp from './components/signUp';
 import SignIn from './components/signIn';
 import Account from './components/account';
 import DiscoverNav from './components/discoverNav';
-import Games from './components/games';
+import Games from './components/GameSearch/Games';
 import Settings from './components/Settings';
 import GamePreview from './components/gamePreview';
 import { DARK_GREY, GREEN, LIGHT_GREY } from "./tools/constants"
@@ -93,6 +93,7 @@ export default function App() {
                 <Stack.Screen name="SignUp" component={SignUp} />
                 <Stack.Screen name="Home" component={Home} />
                 <Stack.Screen name="Settings" component={Settings} />
+                <Stack.Screen name="GamePreview" component={GamePreview} />
             </Stack.Navigator>
         </NavigationContainer>
     );
