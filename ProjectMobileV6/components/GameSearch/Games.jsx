@@ -9,10 +9,9 @@ import {
     Pressable,
 } from "react-native";
 import { Button } from "@rneui/themed";
-import { getVideoGamesWithPlatformsAndGenres } from "../../APIAccess/publication";
+import { getPublications } from "../../APIAccess/publication";
 import { getPlatforms } from "../../APIAccess/platform";
 import { getGenres } from "../../APIAccess/genre";
-import images from "../../images/image";
 import Header from "../header";
 import {
     DARK_GREY,
@@ -23,7 +22,7 @@ import {
 } from "../../tools/constants";
 import FilterModal from "./FilterModal";
 import ErrorText from "../Utils/ErrorText";
-import { faL } from "@fortawesome/free-solid-svg-icons";
+import { API_BASE_URL } from "../../APIAccess/AxiosInstance";
 
 const DEFAULT_PLATFORM = "PC";
 const LIMIT = 48;
@@ -102,7 +101,6 @@ export default function Games({ navigation }) {
                     navigation.navigate("SignIn");
                 }
             });
-        addGames(DEFAULT_PLATFORM, [], true);
     }, []);
 
     useEffect(() => {
@@ -113,19 +111,32 @@ export default function Games({ navigation }) {
         }
     }, [videoGames]);
 
-    const addGames = (platform, genres, reload = false) => {
+    useEffect(() => {
+        setIsLoading(true);
+        addGames(true);
+    }, [selectedFilter.platform, selectedFilter.genres, search]);
+
+    /**
+     * Adds games to the list; if a JWT error is catched, the user is redirected to the sign in page
+     *
+     * @param {boolean=} reload `true` if the list should be emptied before adding the games, `false` otherwise; defaults to `false`
+     *
+     * @returns {void}
+     */
+    const addGames = (reload = false) => {
         if (reload) {
             page.current = 1;
         }
 
-        getVideoGamesWithPlatformsAndGenres(
-            platform,
-            undefined,
-            genres,
-            true,
-            page.current,
-            LIMIT
-        )
+        getPublications({
+            platformCode: selectedFilter.platform,
+            videoGameName: search,
+            genresIds: selectedFilter.genres,
+            getOwnGames: true,
+            alphabetical: true,
+            page: page.current,
+            limit: LIMIT,
+        })
             .then((newVideoGames) => {
                 if (reload) {
                     setVideoGames(newVideoGames);
@@ -152,12 +163,30 @@ export default function Games({ navigation }) {
             });
     };
 
+    /**
+     * Renders a video game in the flatlist
+     *
+     * @param {object} param0 The object containing the video game
+     * @param {object} param0.item The video game
+     * @param {number} param0.item.video_game_id The video game's id
+     * @param {string} param0.item.platform_code The video game's platform code
+     *
+     * @returns {JSX.Element} The video game; a pressable image that redirects to the game preview page
+     */
     const renderItem = ({ item }) => {
         return (
-            <Pressable onPress={() => navigation.navigate("GamePreview",
-            { videoGameId: item.id, actualPlatform: item.platforms[0] })}>
+            <Pressable
+                onPress={() => {
+                    navigation.navigate("GamePreview", {
+                        videoGameId: item.video_game_id,
+                        actualPlatform: item.platform_code,
+                    });
+                }}
+            >
                 <Image
-                    source={images[item.id]}
+                    source={{
+                        uri: `${API_BASE_URL}/videoGame/${item.video_game_id}.png`,
+                    }}
                     style={{
                         margin: IMAGE_MARGIN,
                         width: IMAGE_WIDTH,
@@ -168,12 +197,22 @@ export default function Games({ navigation }) {
         );
     };
 
+    /**
+     * Handles the load more event; adds more games to the list if loadMore is `true`
+     *
+     * @returns {void}
+     */
     const handleLoadMore = () => {
         if (loadMore) {
-            addGames(selectedFilter.platform, selectedFilter.genres);
+            addGames();
         }
     };
 
+    /**
+     * Renders the footer of the flatlist; an activity indicator if loadMore is `true`, an empty view otherwise
+     *
+     * @returns {JSX.Element} The footer
+     */
     const renderFooter = () => {
         return loadMore ? (
             <ActivityIndicator
@@ -186,6 +225,11 @@ export default function Games({ navigation }) {
         );
     };
 
+    /**
+     * Renders the flatlist; an activity indicator if isLoading is `true`, an error message if no video games are found, the flatlist otherwise
+     *
+     * @returns {JSX.Element} The flatlist, an activity indicator or an error message
+     */
     const renderFlatlist = () => {
         if (isLoading) {
             return (
@@ -196,8 +240,13 @@ export default function Games({ navigation }) {
         }
 
         if (videoGames.length === 0) {
+            if (search !== "" || selectedFilter.genres.length !== 0) {
+                return (
+                    <ErrorText errorMessage="No video games match your search criteria" />
+                );
+            }
             return (
-                <ErrorText errorMessage="It seems that no video games have been found" />
+                <ErrorText errorMessage="It seems that you have no video games" />
             );
         }
 
@@ -212,32 +261,36 @@ export default function Games({ navigation }) {
         );
     };
 
+    /**
+     * Resets the selected filter to the default platform and an empty array of genres
+     * 
+     * @returns {void}
+     */
     const modalOnReset = () => {
-        setIsLoading(true);
         setSelectedFilter({
             platform: DEFAULT_PLATFORM,
             genres: [],
         });
-        addGames(DEFAULT_PLATFORM, [], true);
     };
 
+    /**
+     * Sets the selected filter to the given platform and genres
+     * 
+     * @param {int[]} genres The genres ids
+     * @param {string} platform The platform code
+     * 
+     * @returns {void}
+     */
     const modalOnApply = (genres, platform) => {
-        if (
-            JSON.stringify(selectedFilter.genres) !== JSON.stringify(genres) ||
-            selectedFilter.platform !== platform
-        ) {
-            setIsLoading(true);
-            setSelectedFilter({
-                platform,
-                genres,
-            });
-            addGames(platform, genres, true);
-        }
+        setSelectedFilter({
+            platform,
+            genres,
+        });
     };
 
     return (
         <View style={styles.container}>
-            <Header onSearchChange={setSearch} />
+            <Header onSearch={setSearch} />
             <View style={styles.body}>
                 <View style={{ width: "100%", paddingTop: 10 }}>
                     <FilterModal

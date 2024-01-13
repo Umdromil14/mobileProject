@@ -1,5 +1,5 @@
 import axios from "axios";
-import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
+import { API_URL, getAuthorizationHeader, API_BASE_URL } from "./AxiosInstance";
 import { getCategory } from "./category";
 
 /**
@@ -28,10 +28,9 @@ async function getPublications(options) {
         undefined;
 
     const Authorization = await getAuthorizationHeader();
-    const response = await axios.get(`${APIURL}/publication`, {
+    const response = await axios.get(`${API_URL}/publication`, {
         headers: { Authorization: Authorization },
         params: options,
-        data: { genresIds: options.genresIds },
     });
 
     return response.data;

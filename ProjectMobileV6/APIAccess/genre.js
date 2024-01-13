@@ -1,5 +1,5 @@
 import axios from "axios";
-import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
+import { API_URL, getAuthorizationHeader } from "./AxiosInstance";
 
 /**
  * Get genres
@@ -12,7 +12,7 @@ import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
  */
 async function getGenres(id, alphabetical) {
     const Authorization = await getAuthorizationHeader();
-    const response = await axios.get(`${APIURL}/genre`, {
+    const response = await axios.get(`${API_URL}/genre`, {
         headers: { Authorization: Authorization },
         params: { id, alphabetical },
     });

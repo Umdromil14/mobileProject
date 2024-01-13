@@ -7,22 +7,18 @@ import { LIGHT_GREY, DARK_GREY, HEADER_HEIGHT } from "../tools/constants";
 const LOGO_SIZE = 50;
 const MARGIN = 15;
 
+// TODO majuscule au fichier
 /**
  * Header of the application
  *
- * @param {function=} onSearchChange function to call when the search bar changes; if not provided, the search bar will not be displayed
+ * @param {function=} onSearch function to call when the search bar changes; if not provided, the search bar will not be displayed
  *
  * @returns {JSX.Element} header of the application
  */
-export default function Header({ onSearchChange }) {
+export default function Header({ onSearch }) {
     const [search, setSearch] = useState("");
 
-    const handleSearchChange = (search) => {
-        setSearch(search);
-        onSearchChange(search);
-    };
-
-    if (!onSearchChange) {
+    if (!onSearch) {
         return (
             <View style={styles.header}>
                 <StatusBar backgroundColor={LIGHT_GREY} hidden={false} />
@@ -45,10 +41,18 @@ export default function Header({ onSearchChange }) {
                 containerStyle={styles.containerStyle}
                 inputContainerStyle={styles.inputContainerStyle}
                 placeholder="Search"
-                onChangeText={(search) => {
-                    handleSearchChange(search);
-                }}
+                returnKeyType="search"
                 value={search}
+                onChangeText={(search) => {
+                    setSearch(search);
+                }}
+                onSubmitEditing={() => {
+                    onSearch(search);
+                }}
+                onClear={() => {
+                    setSearch("");
+                    onSearch("");
+                }}
             />
         </View>
     );

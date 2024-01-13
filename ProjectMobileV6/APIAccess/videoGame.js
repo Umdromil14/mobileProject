@@ -1,5 +1,5 @@
 import axios from "axios";
-import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
+import { API_URL, getAuthorizationHeader } from "./AxiosInstance";
 
 /**
  * Get all video games or video games by name or id
@@ -13,7 +13,7 @@ import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
  */
 async function getVideoGames(id, name) {
     const Authorization = await getAuthorizationHeader();
-    const response = await axios.get(`${APIURL}/videoGame`, {
+    const response = await axios.get(`${API_URL}/videoGame`, {
         headers: { Authorization: Authorization },
         params: { id, name },
     });

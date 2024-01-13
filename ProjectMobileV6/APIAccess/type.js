@@ -1,5 +1,5 @@
 import axios from "axios";
-import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
+import { API_URL, getAuthorizationHeader } from "./AxiosInstance";
 
 /**
  * Get types
@@ -12,7 +12,7 @@ import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
  */
 async function getTypes(id) {
     const Authorization = await getAuthorizationHeader();
-    const response = await axios.get(`${APIURL}/type`, {
+    const response = await axios.get(`${API_URL}/type`, {
         headers: { Authorization: Authorization },
         params: { id },
     });

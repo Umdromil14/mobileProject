@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
  * Displays a dropdown list
  *
  * @param {object} props The props object
- * @param {object[]} props.data The data to display
+ * @param {object[]} props.data The data to display (key: label, value, image)
  * @param {string} props.selectedValue The selected value
  * @param {function} props.onChange The function to call when the value changes
  *
@@ -59,6 +59,7 @@ export default function DropdownList({ data, selectedValue, onChange }) {
                 valueField="value"
                 imageField="image"
                 value={value}
+                autoScroll={false}
                 onFocus={() => setIsFocus(true)}
                 onBlur={() => setIsFocus(false)}
                 onChange={(item) => {

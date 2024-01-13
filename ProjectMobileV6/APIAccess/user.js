@@ -3,12 +3,13 @@ import axios from "axios";
 import { Alert } from "react-native";
 import AwesomeAlert from "react-native-awesome-alerts";
 import { cleaningError } from "../tools/isValidForm";
-import { APIURL, getAuthorizationHeader } from "./AxiosInstance";
+import { API_URL, getAuthorizationHeader } from "./AxiosInstance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+//! vérifier AxiosInstance
 
 async function postUser(user, func, errors) {
     try {
-        await axios.post(APIURL + "/user", {
+        await axios.post(API_URL + "/user", {
             firstname: user.firstname,
             lastname: user.lastname,
             username: user.username,
@@ -66,7 +67,7 @@ async function login(
     }
     if (isValid) {
         try {
-            const response = await axios.post(APIURL + "/user/login", {
+            const response = await axios.post(API_URL + "/user/login", {
                 login : user.email ? user.email : user.username,
                 password: user.password,
             });
@@ -76,7 +77,7 @@ async function login(
         } catch (reason) {
             throw reason;
             //.catch((reason) => {
-            console.log(APIURL);
+            console.log(API_URL);
             console.log(reason.response.request.status);
             switch (reason.response.request.status) {
                 case 400:
@@ -112,7 +113,7 @@ async function login(
 async function getUser() {
     try {
         const Authorization = await getAuthorizationHeader();
-        const response = await axios.get(APIURL + "/user/me", {
+        const response = await axiosInstance.get(API_URL + "/user/me", {
             headers: { Authorization: Authorization },
         });
         return response.data;
@@ -126,7 +127,7 @@ async function updateUser(updateValues) {
     try {
         const Authorization = await getAuthorizationHeader();
         const response = await axios.patch(
-            APIURL + "/user/",
+            API_URL + "/user/",
             updateValues,
             { headers: { Authorization: Authorization } }
         );
@@ -140,7 +141,7 @@ async function updateUser(updateValues) {
 
 async function deleteUser() {
     try {
-        const response = await axios.delete(APIURL + "/user/", {
+        const response = await axios.delete(API_URL + "/user/", {
             headers: { Authorization: getAuthorizationHeader() },
         });
     } catch (error) {}

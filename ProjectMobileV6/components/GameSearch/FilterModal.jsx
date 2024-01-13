@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
     Modal,
     View,
@@ -6,15 +6,14 @@ import {
     Text,
     FlatList,
     Dimensions,
-    Touchable,
+    Pressable,
 } from "react-native";
 import { Button } from "@rneui/themed";
-import images from "../../images/button/images";
-import logos from "../../images/platform/logos";
 import { DARK_GREY, GREEN } from "../../tools/constants";
 import ErrorText from "../Utils/ErrorText";
 import ImageButton from "../Utils/ImageButton";
 import DropdownList from "../Utils/DropdownList";
+import { API_BASE_URL } from "../../APIAccess/AxiosInstance";
 
 const BOX_PADDING = 20;
 const MODAL_DIVISION = ["30%", "55%", "15%"];
@@ -76,8 +75,8 @@ const styles = StyleSheet.create({
  * @param {object[]} props.platforms The platforms
  * @param {object[]} props.genres The genres
  * @param {object} props.selectedFilter The selected filter
- * @param {string} props.selectedFilter.platform The selected platform
- * @param {string[]} props.selectedFilter.genres The selected genres
+ * @param {string} props.selectedFilter.platform The selected platform code
+ * @param {int[]} props.selectedFilter.genres The selected genres ids
  *
  * @returns {JSX.Element} The modal
  */
@@ -92,29 +91,55 @@ export default function FilterModal({
 }) {
     const selectedPlatform = useRef("");
     const selectedGenres = useRef([]);
-
+  
+    /**
+     * Sets the selected platform
+     *
+     * @param {string} platform The selected platform code
+     *
+     * @returns {void}
+     */
     const setSelectedPlatform = (platform) => {
         selectedPlatform.current = platform;
     };
 
+    /**
+     * Sets the selected genres
+     *
+     * @param {int[]} genres The selected genres ids
+     *
+     * @returns {void}
+     */
     const setSelectedGenres = (genres) => {
         selectedGenres.current = genres;
     };
 
-    setSelectedPlatform(selectedFilter.platform);
-    setSelectedGenres(selectedFilter.genres);
+    useEffect(() => {
+        setSelectedPlatform(selectedFilter.platform);
+        setSelectedGenres(selectedFilter.genres);
+    }, [isOpen]);
 
+    /**
+     * Handles the change of the selected genres; if the genre is already selected, it is removed from the list, otherwise it is added
+     *
+     * @param {int} genreId The genre id
+     *
+     * @returns {void}
+     */
     const handleSelectedGenresChange = (genreId) => {
         const index = selectedGenres.current.indexOf(genreId);
-        const newSelectedGenres =
+        selectedGenres.current =
             index !== -1
                 ? selectedGenres.current.filter((id) => id !== genreId)
                 : [...selectedGenres.current, genreId];
-
-        selectedGenres.current = newSelectedGenres;
     };
 
-    const GenresFlatList = () => {
+    /**
+     * Renders the genres flatlist; if no genres are found, an error message is displayed
+     * 
+     * @returns {JSX.Element} The flatlist or the error message
+     */
+    const renderFlatlist = () => {
         return genres.length === 0 ? (
             <ErrorText errorMessage="It seems that no genres have been found" />
         ) : (
@@ -123,7 +148,7 @@ export default function FilterModal({
                 numColumns={3}
                 renderItem={({ item }) => (
                     <ImageButton
-                        source={images[item.id]}
+                        source={{ uri: `${API_BASE_URL}/genre/${item.id}.png` }}
                         onPress={() => {
                             handleSelectedGenresChange(item.id);
                         }}
@@ -146,11 +171,9 @@ export default function FilterModal({
             visible={isOpen}
             onRequestClose={onClose}
         >
-            <View
-                style={{
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    flex: 1,
-                }}
+            <Pressable
+                onPress={onClose}
+                style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.5)" }}
             />
             <View style={styles.container}>
                 <View
@@ -166,12 +189,12 @@ export default function FilterModal({
                         data={platforms.map((platform) => ({
                             label: platform.description,
                             value: platform.code,
-                            image: logos[platform.code],
+                            image: {
+                                uri: `${API_BASE_URL}/platform/${platform.code}.png`,
+                            },
                         }))}
                         selectedValue={selectedPlatform.current}
-                        onChange={(platform) => {
-                            setSelectedPlatform(platform);
-                        }}
+                        onChange={setSelectedPlatform}
                     />
                 </View>
                 <View
@@ -183,7 +206,7 @@ export default function FilterModal({
                     ]}
                 >
                     <Text style={styles.title}>Genres</Text>
-                    <GenresFlatList />
+                    {renderFlatlist()}
                 </View>
                 <View
                     style={[

@@ -127,7 +127,7 @@ function NewGames({ route, navigation }) {
                     <FontAwesomeIcon icon={faArrowLeft} size={40} style={{ color: GREEN }} />
                 </Pressable>
                 <Text style={[globalStyles.whiteText, { marginLeft: 12, marginTop: 2, fontSize: 20 }]}>
-                    {newGame ? "New games on " + platform.abbreviation : platform.abbreviation}
+                    {newGame? "New games on " + platform.abbreviation : platform.abbreviation}
                 </Text>
             </View>
             {content}
