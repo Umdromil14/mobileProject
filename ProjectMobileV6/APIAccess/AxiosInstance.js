@@ -1,4 +1,3 @@
-import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // const API_URL = "http://192.168.163.242:3001";
@@ -21,9 +20,4 @@ async function getAuthorizationHeader() {
     return token;
 }
 
-const axiosInstance = axios.create({
-    API_URL,
-    headers: { Authorization: getAuthorizationHeader() }
-});
-
-export { API_URL, API_BASE_URL, getAuthorizationHeader, axiosInstance, getToken };
+export { APIURL, getAuthorizationHeader, getToken };

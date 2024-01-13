@@ -5,15 +5,16 @@ import { faUser, faMagnifyingGlass, faGamepad } from '@fortawesome/free-solid-sv
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
+import store from './store'
+import { Provider } from 'react-redux'
 
 import SignUp from './components/signUp';
 import SignIn from './components/signIn';
-import Account from './components/account';
-import DiscoverNav from './components/discoverNav';
+import Account from './components/Account/account';
+import DiscoverNav from './components/Discover/discoverNav';
 import Games from './components/GameSearch/Games';
-import Settings from './components/Settings';
-import GamePreview from './components/gamePreview';
+import Settings from './components/Account/Settings';
+import GamePreview from './components/GamePreview/gamePreview';
 import { DARK_GREY, GREEN, LIGHT_GREY } from "./tools/constants"
 
 const Stack = createNativeStackNavigator();
@@ -81,20 +82,22 @@ function Home() {
 
 export default function App() {
     const MyTheme = {
-        dark:true,
-        colors:{
-            background:DARK_GREY
+        dark: true,
+        colors: {
+            background: DARK_GREY
         }
     }
     return (
-        <NavigationContainer theme={MyTheme}>
-            <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="SignIn" component={SignIn} />
-                <Stack.Screen name="SignUp" component={SignUp} />
-                <Stack.Screen name="Home" component={Home} />
-                <Stack.Screen name="Settings" component={Settings} />
-                <Stack.Screen name="GamePreview" component={GamePreview} />
-            </Stack.Navigator>
-        </NavigationContainer>
+        <Provider store={ store }>
+            <NavigationContainer theme={MyTheme}>
+                <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="SignIn" component={SignIn} />
+                    <Stack.Screen name="SignUp" component={SignUp} />
+                    <Stack.Screen name="Home" component={Home} />
+                    <Stack.Screen name="Settings" component={Settings} />
+                    <Stack.Screen name="GamePreview" component={GamePreview} />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </Provider>
     );
 }

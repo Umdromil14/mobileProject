@@ -74,8 +74,8 @@ async function getVideoGamesWithPlatformsAndGenres(
         platformCode,
         videoGameName,
         genresIds,
-        getOwnGames,
         getVideoGamesInfo: true,
+        getOwnGames,
         alphabetical: true,
         page,
         limit,
@@ -105,7 +105,4 @@ async function getVideoGamesWithPlatformsAndGenres(
     return videoGames;
 }
 
-export {
-    getPublications,
-    getVideoGamesWithPlatformsAndGenres,
-};
+export { getPublications, getVideoGamesWithPlatformsAndGenres };

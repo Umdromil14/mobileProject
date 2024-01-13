@@ -3,7 +3,7 @@ import axios from "axios";
 import { Alert } from "react-native";
 import AwesomeAlert from "react-native-awesome-alerts";
 import { cleaningError } from "../tools/isValidForm";
-import { API_URL, getAuthorizationHeader, axiosInstance } from "./AxiosInstance";
+import { API_URL, getAuthorizationHeader } from "./AxiosInstance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 //! vérifier AxiosInstance
 
@@ -72,10 +72,10 @@ async function login(
                 password: user.password,
             });
             await AsyncStorage.setItem("token", response.data.token);
-            axiosInstance.defaults.headers.common["Authorization"] =
+            axios.defaults.headers.common["Authorization"] =
                 response.data.token;
         } catch (reason) {
-            throw reason; // TODO
+            throw reason;
             //.catch((reason) => {
             console.log(API_URL);
             console.log(reason.response.request.status);
@@ -126,7 +126,7 @@ async function getUser() {
 async function updateUser(updateValues) {
     try {
         const Authorization = await getAuthorizationHeader();
-        const response = await axiosInstance.patch(
+        const response = await axios.patch(
             API_URL + "/user/",
             updateValues,
             { headers: { Authorization: Authorization } }
@@ -141,7 +141,7 @@ async function updateUser(updateValues) {
 
 async function deleteUser() {
     try {
-        const response = await axiosInstance.delete(API_URL + "/user/", {
+        const response = await axios.delete(API_URL + "/user/", {
             headers: { Authorization: getAuthorizationHeader() },
         });
     } catch (error) {}

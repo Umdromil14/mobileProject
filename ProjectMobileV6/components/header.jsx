@@ -1,6 +1,6 @@
 import logo from "../images/logo.png";
 import { Image, View, StyleSheet, StatusBar, Dimensions } from "react-native";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { SearchBar } from "@rneui/themed";
 import { LIGHT_GREY, DARK_GREY, HEADER_HEIGHT } from "../tools/constants";
 

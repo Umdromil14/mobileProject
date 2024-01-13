@@ -19,10 +19,28 @@ async function getGames(publicationId) {
     return response.data;
 }
 
+/**
+ * Get games of the user for a video game
+ *
+ * @param {number=} videoGameId the id of the publication; if not specified, all games are returned
+ *
+ * @returns {Promise<Array>} Array of games
+ *
+ * @throws {Error} if the request failed
+ */
+async function getGamesByVideoGame(videoGameId) {
+    const Authorization = await getAuthorizationHeader();
+    const response = await axios.get(`${API_URL}/game/user`, {
+        headers: { Authorization: Authorization },
+        params: { videoGameId: videoGameId },
+    });
+    return response.data;
+}
+
 async function updateGame(publicationId, updateValues){
     try{
         const Authorization = await getAuthorizationHeader();
-        const response = await axiosInstance.patch(`${API_URL}/game/user/${publicationId}`, updateValues, 
+        const response = await axios.patch(`${API_URL}/game/user/${publicationId}`, updateValues, 
             {headers: { Authorization: Authorization },
         });
         return response.data;
@@ -33,4 +51,4 @@ async function updateGame(publicationId, updateValues){
     
 }
 
-export { getGames, updateGame };
+export { getGames, getGamesByVideoGame, updateGame };

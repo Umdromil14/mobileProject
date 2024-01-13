@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_URL, API_BASE_URL, getAuthorizationHeader } from "./AxiosInstance";
+import { API_URL, getAuthorizationHeader } from "./AxiosInstance";
 import { getPublications } from "./publication";
 
 /**
@@ -20,16 +20,15 @@ async function getPlatforms(code) {
     return response.data;
 }
 
-async function getPlatformImage(code) {
-    const Authorization = await getAuthorizationHeader();
-    const response = await axios.get(`${API_BASE_URL}/platform/${code}.png`, {
-        headers: { Authorization: Authorization },
-        responseType: "blob",
-    });
-    return response.data;
+async function getPlatformsByVideoGame(videoGameId){
+    const publications = await getPublications({ videoGameId: videoGameId });
+    let platforms = [];
+    for (const publication of publications) {
+        const platform = publication.platform_code;
+        const response = await getPlatforms(platform);
+        platforms.push(response[0]);
+    }
+    return platforms
 }
 
-export {
-    getPlatforms,
-    getPlatformImage,
-};
+export { getPlatforms, getPlatformsByVideoGame };

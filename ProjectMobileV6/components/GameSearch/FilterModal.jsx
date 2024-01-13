@@ -91,7 +91,7 @@ export default function FilterModal({
 }) {
     const selectedPlatform = useRef("");
     const selectedGenres = useRef([]);
-
+  
     /**
      * Sets the selected platform
      *

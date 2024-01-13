@@ -69,7 +69,7 @@ function NewGames({ route, navigation }) {
     useEffect(() => {
         Promise.all([
             getVideoGamesWithPlatformsAndGenres(),
-            getPublications({platformCode: platform.code, getLastGames: true})
+            getPublications({ platformCode: platform.code, getLastGames: true })
         ])
             .then((response) => {
                 setPublications(response[0].filter((videoGame) => {
