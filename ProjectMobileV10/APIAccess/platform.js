@@ -1,5 +1,4 @@
 import axios from "axios";
-import { getAuthorizationHeader } from "./AxiosInstance";
 import { API_URL } from "../tools/constants";
 import { getPublications } from "./publication";
 
@@ -13,9 +12,7 @@ import { getPublications } from "./publication";
  * @throws {Error} if the request failed
  */
 async function getPlatforms(code) {
-    const Authorization = await getAuthorizationHeader();
     const response = await axios.get(`${API_URL}/platform`, {
-        headers: { Authorization: Authorization },
         params: { code },
     });
     return response.data;

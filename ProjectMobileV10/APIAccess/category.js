@@ -1,5 +1,4 @@
 import axios from "axios";
-import { getAuthorizationHeader } from "./AxiosInstance";
 import { API_URL } from "../tools/constants";
 
 /**
@@ -12,13 +11,13 @@ import { API_URL } from "../tools/constants";
  *
  * @throws {Error} if the request failed
  */
-async function getCategory(genreId, videoGameId) {
-    const Authorization = await getAuthorizationHeader();
-    const response = await axios.get(`${API_URL}/category`, {
-        headers: { Authorization: Authorization },
-        params: { genreId, videoGameId },
-    });
-    return response.data;
+async function getCategory(genreId, videoGameId, token) {
+    return (
+        await axios.get(`${API_URL}/category`, {
+            headers: { Authorization: token },
+            params: { genreId, videoGameId },
+        })
+    ).data;
 }
 
 export { getCategory };

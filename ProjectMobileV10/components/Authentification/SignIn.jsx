@@ -12,16 +12,36 @@ import {
 import { globalStyles } from "../../styles/globalStyles";
 import { connection } from "../../APIAccess/user";
 import { isValidEmail, isValidUsername } from "../../tools/utils";
+import { useDispatch } from "react-redux";
+import { addToken } from "../../store/slice/token";
+
+const styles = StyleSheet.create({
+    tinyLogo: {
+        width: 100,
+        height: 100,
+        top: 50,
+        marginBottom: 100,
+    },
+    form: {
+        backgroundColor: "#59A52C",
+        borderRadius: 20,
+        padding: 10,
+        width: 300,
+    },
+});
 
 /**
  * Sign in page
  *
  * @param {object} props
- * @param {any} props.navigation
+ * @param {any} props.navigation navigation object
+ * @param {object} props.route route params
+ * @param {boolean} props.route.params.disconnect if the user has been disconnected
  *
  * @returns {JSX.Element}
  */
-function SignIn({ navigation }) {
+function SignIn({ route, navigation }) {
+    const dispatch = useDispatch();
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -33,9 +53,9 @@ function SignIn({ navigation }) {
      *
      * @returns {void}
      */
-    const toggleShowPassword = () => {
+    function toggleShowPassword() {
         setShowPassword(!showPassword);
-    };
+    }
 
     /**
      * Clean the error message
@@ -53,8 +73,8 @@ function SignIn({ navigation }) {
      * @returns {void}
      */
     function cleanForm() {
-        setLogin("");
-        setPassword("");
+        setLogin(undefined);
+        setPassword(undefined);
         cleanError();
     }
 
@@ -64,12 +84,12 @@ function SignIn({ navigation }) {
      * @returns {void}
      */
     function signIn() {
-        cleanError();
         if (login && (isValidUsername(login) || isValidEmail(login))) {
             connection({ login, password })
-                .then(() => {
+                .then((token) => {
+                    dispatch(addToken(`Bearer ${token}`));
                     cleanForm();
-                    navigation.navigate("Home");
+                    navigation.navigate("LoadingPage");
                 })
                 .catch((err) => {
                     err.response?.status === 401
@@ -84,6 +104,11 @@ function SignIn({ navigation }) {
     return (
         <View style={globalStyles.background}>
             <Image style={styles.tinyLogo} source={logo} />
+            {route.params?.message && (
+                <Text style={[globalStyles.error, { fontSize: 15 }]}>
+                    {route.params.message}
+                </Text>
+            )}
             <View style={styles.form}>
                 <Text style={globalStyles.textForm}>Identifiant</Text>
                 <Input
@@ -92,7 +117,7 @@ function SignIn({ navigation }) {
                     errorStyle={globalStyles.error}
                     placeholder="Username or email"
                     value={login}
-                    onChangeText={(text) => setLogin(text)}
+                    onChangeText={(login) => setLogin(login)}
                     leftIcon={<FontAwesomeIcon icon={faUser} size={24} />}
                     errorMessage={erroridentifiant}
                 />
@@ -103,7 +128,7 @@ function SignIn({ navigation }) {
                     errorStyle={globalStyles.error}
                     placeholder="Password"
                     value={password}
-                    onChangeText={(text) => setPassword(text)}
+                    onChangeText={(password) => setPassword(password)}
                     leftIcon={<FontAwesomeIcon icon={faLock} size={24} />}
                     rightIcon={
                         <Pressable onPress={toggleShowPassword}>
@@ -131,7 +156,10 @@ function SignIn({ navigation }) {
                     marginVertical: 10,
                     paddingTop: 100,
                 }}
-                onPress={signIn}
+                onPress={() => {
+                    cleanError();
+                    signIn();
+                }}
             />
             <Button
                 title="Create a account"
@@ -154,21 +182,5 @@ function SignIn({ navigation }) {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    tinyLogo: {
-        width: 100,
-        height: 100,
-        top: 50,
-        marginBottom: 100,
-    },
-    form: {
-        backgroundColor: "#59A52C",
-        borderRadius: 20,
-        padding: 10,
-        height: 231,
-        width: 300,
-    },
-});
 
 export default SignIn;

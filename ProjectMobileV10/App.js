@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUser, faMagnifyingGlass, faGamepad } from '@fortawesome/free-solid-svg-icons';
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -14,6 +13,7 @@ import DiscoverNav from './components/Discover/DiscoverNav';
 import Games from './components/GameSearch/Games';
 import Settings from './components/Account/Settings';
 import GamePreview from './components/GamePreview/GamePreview';
+import LoadingPage from './components/Global/LoadingPage';
 import { DARK_GREY, GREEN, LIGHT_GREY } from "./tools/constants"
 
 const Stack = createNativeStackNavigator();
@@ -95,6 +95,7 @@ export default function App() {
                     <Stack.Screen name="Home" component={Home} />
                     <Stack.Screen name="Settings" component={Settings} />
                     <Stack.Screen name="GamePreview" component={GamePreview} />
+                    <Stack.Screen name="LoadingPage" component={LoadingPage} />
                 </Stack.Navigator>
             </NavigationContainer>
         </Provider>

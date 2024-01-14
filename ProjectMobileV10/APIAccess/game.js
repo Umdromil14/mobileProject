@@ -1,5 +1,4 @@
 import axios from "axios";
-import { getAuthorizationHeader } from "./AxiosInstance";
 import { API_URL } from "../tools/constants";
 
 /**
@@ -11,13 +10,13 @@ import { API_URL } from "../tools/constants";
  *
  * @throws {Error} if the request failed
  */
-async function getGames(publicationId) {
-    const Authorization = await getAuthorizationHeader();
-    const response = await axios.get(`${API_URL}/game/user`, {
-        headers: { Authorization: Authorization },
-        params: { publicationId },
-    });
-    return response.data;
+async function getGames(publicationId, token) {
+    return (
+        await axios.get(`${API_URL}/game/user`, {
+            headers: { Authorization: token },
+            params: { publicationId },
+        })
+    ).data;
 }
 
 /**
@@ -29,34 +28,15 @@ async function getGames(publicationId) {
  *
  * @throws {Error} if the request failed
  */
-async function getGamesByVideoGame(videoGameId) {
-    const Authorization = await getAuthorizationHeader();
-    const response = await axios.get(`${API_URL}/game/user`, {
-        headers: { Authorization: Authorization },
-        params: { videoGameId: videoGameId },
-    });
-    return response.data;
+async function getGamesByVideoGame(videoGameId, token) {
+    return (
+        await axios.get(`${API_URL}/game/user`, {
+            headers: { Authorization: token },
+            params: { videoGameId: videoGameId },
+        })
+    ).data;
 }
 
-/**
- * This function create the different parts displayed on screen
- * 
- * @param {number} publicationId the id of the publication; if not specified, all games are returned
- * @param {object} updateValues the object containing the values to update
- * @param {boolean=} updateValues.is_owned the value to know if the user has the game (true) or no (false).
- * @param {string=} updateValues.review_comment the comment that the user gave to the game
- * @param {number=} updateValues.review_rating the rating the user gave to the game
- *
- * @returns {Number} The status code of the request
- */
-async function updateGame(publicationId, updateValues) {
-    const Authorization = await getAuthorizationHeader();
-    const response = await axios.patch(`${API_URL}/game/user/${publicationId}`, updateValues,
-        {
-            headers: { Authorization: Authorization },
-        });
-    return response.status;
-}
 
 /**
  * This function create the different parts displayed on screen
@@ -70,10 +50,28 @@ async function updateGame(publicationId, updateValues) {
  *
  * @returns {number} The status code of the request
  */
-async function createGame(valuesToAdd) {
-    const Authorization = await getAuthorizationHeader();
-    const response = await axios.post(`${API_URL}/game/user`, valuesToAdd, { headers: { Authorization: Authorization } });
-    return response.status;
+async function createGame(valuesToAdd, token) {
+    return (
+        await axios.post(`${API_URL}/game/user`, valuesToAdd, {
+            headers: { Authorization: token },
+        })
+    ).status;
+}
+/**
+ * This function create the different parts displayed on screen
+ * 
+ * @param {number} publicationId the id of the publication; if not specified, all games are returned
+ * @param {object} updateValues the object containing the values to update
+ * @param {boolean=} updateValues.is_owned the value to know if the user has the game (true) or no (false).
+ * @param {string=} updateValues.review_comment the comment that the user gave to the game
+ * @param {number=} updateValues.review_rating the rating the user gave to the game
+ *
+ * @returns {Number} The status code of the request
+ */
+async function updateGame(publicationId, updateValues, token) {
+    await axios.patch(`${API_URL}/game/user/${publicationId}`, updateValues, {
+        headers: { Authorization: token },
+    });
 }
 
 export { getGames, getGamesByVideoGame, updateGame, createGame };

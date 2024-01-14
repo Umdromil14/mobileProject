@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const genreSlice = createSlice({
-    name: 'platformList',
+    name: 'genreList',
     initialState: {
         genres: [],
         nextIdGenre: 0
@@ -14,12 +14,12 @@ export const genreSlice = createSlice({
             });
             state.nextIdGenre += 1
         },
-        // removeGenre: (state, action) => {
-        //     state.genres = state.genres.filter(elem => action.payload.id !== elem.id)
-        // }
+        setGenres: (state, action) => {
+            state.genres = action.payload
+        }
     },
 })
 
-export const { addGenre, removeGenre } = genreSlice.actions;
+export const { addGenre, setGenres } = genreSlice.actions;
 
 export default genreSlice.reducer;

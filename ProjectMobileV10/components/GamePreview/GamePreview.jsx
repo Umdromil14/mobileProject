@@ -6,7 +6,7 @@ import { Tab, TabView, AirbnbRating, Button, Dialog, CheckBox } from "@rneui/the
 import { useState, useEffect, useCallback } from "react";
 import { getPublications } from "../../APIAccess/publication";
 import { getGamesByVideoGame, updateGame, createGame } from "../../APIAccess/game";
-import Header from "../Header";
+import Header from "../Global/Header";
 import { DARK_GREY, GREEN, API_BASE_URL } from "../../tools/constants";
 import UpdateReview from "./UpdateReviewModal";
 import { useSelector } from 'react-redux';
@@ -36,7 +36,7 @@ function CheckBoxInit(gameReviews, actualPublication, actualReview) {
         updateGame(actualPublication.id,
             {
                 is_owned: !actualReview.is_owned
-            }).catch((error) => {
+            },token).catch((error) => {
                 if (error.response?.data?.code.includes("JWT")) {
                     navigation.navigate("SignIn", { message: "The software doesn't recognize you, please sign in again!" });
                 }
@@ -58,7 +58,7 @@ function CheckBoxInit(gameReviews, actualPublication, actualReview) {
             review_rating: 0,
             review_comment: null,
             review_date: null
-        }).catch((error) => {
+        },token).catch((error) => {
             if (error.response?.data?.code.includes("JWT")) {
                 navigation.navigate("SignIn", { message: "The software doesn't recognize you, please sign in again!" });
             }
@@ -90,7 +90,7 @@ function CheckBoxInit(gameReviews, actualPublication, actualReview) {
  * @returns {JSX.Element} The game preview page displayed
  */
 function GamePreview({ route, navigation }) {
-
+    const token = useSelector((state) => state.token.token);
     const { videoGameId, actualPlatform } = route.params;
     const platforms = useSelector(state => state.platformList.platforms);
 
@@ -107,14 +107,14 @@ function GamePreview({ route, navigation }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const publications = await getPublications({ videoGameId: videoGameId, getVideoGamesInfo: true });
+                const publications = await getPublications({ videoGameId: videoGameId, getVideoGamesInfo: true },token);
                 const videoGamePlatforms = platforms.filter((platform) => {
                     return publications.some((publication) => {
                         return platform.code === publication.platform_code;
                     })
                 });
 
-                getGamesByVideoGame(videoGameId).then((response) => {
+                getGamesByVideoGame(videoGameId,token).then((response) => {
                     setGameReviews(response);
                 }).catch((error) => {
                     if (error.response?.data.code?.includes("JWT")) {
@@ -291,7 +291,7 @@ function GamePreview({ route, navigation }) {
                                 title={"Modify"}
                                 titleStyle={{ fontWeight: "700" }}
                                 buttonStyle={{
-                                    backgroundColor: "#59A52C",
+                                    backgroundColor: GREEN,
                                     borderWidth: 0,
                                     borderRadius: 20,
                                 }}

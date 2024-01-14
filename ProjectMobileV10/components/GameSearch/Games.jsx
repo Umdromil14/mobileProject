@@ -13,7 +13,7 @@ import { Button, normalize } from "@rneui/themed";
 import { getPublications } from "../../APIAccess/publication";
 import { getPlatforms } from "../../APIAccess/platform";
 import { getGenres } from "../../APIAccess/genre";
-import Header from "../Header";
+import Header from "../Global/Header";
 import {
     DARK_GREY,
     HEADER_HEIGHT,
@@ -26,6 +26,7 @@ import ErrorText from "../Utils/ErrorText";
 import { API_BASE_URL } from "../../tools/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { useSelector } from "react-redux";
 
 const LIMIT = 48;
 const IMAGE_MARGIN = 5;
@@ -88,6 +89,7 @@ const styles = StyleSheet.create({
  * @returns {JSX.Element} The video games
  */
 export default function Games({ route, navigation }) {
+    const token = useSelector((state) => state.token.token);
     const {
         defaultPlatform = "PC",
         getOwnGames = true,
@@ -149,16 +151,19 @@ export default function Games({ route, navigation }) {
             page.current = 1;
         }
 
-        getPublications({
-            platformCode: selectedFilter.platform,
-            videoGameName: search,
-            genresIds: selectedFilter.genres,
-            getOwnGames,
-            sortByDate,
-            alphabetical: true,
-            page: page.current,
-            limit: LIMIT,
-        })
+        getPublications(
+            {
+                platformCode: selectedFilter.platform,
+                videoGameName: search,
+                genresIds: selectedFilter.genres,
+                getOwnGames,
+                sortByDate,
+                alphabetical: true,
+                page: page.current,
+                limit: LIMIT,
+            },
+            token
+        )
             .then((newVideoGames) => {
                 if (reload) {
                     setVideoGames(newVideoGames);

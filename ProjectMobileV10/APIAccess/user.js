@@ -1,8 +1,20 @@
 import axios from "axios";
-import { getAuthorizationHeader } from "./AxiosInstance";
 import { API_URL } from "../tools/constants";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
+/**
+ * Create a new user
+ *
+ * @param {object} user user object
+ * @param {string} user.firstname first name of the user
+ * @param {string} user.lastname last name of the user
+ * @param {string} user.username username of the user
+ * @param {string} user.email email of the user
+ * @param {string} user.password password of the user
+ *
+ * @throws {Error} if the request failed
+ *
+ * @returns {Promise<void>}
+ */
 async function postUser(user) {
     await axios.post(API_URL + "/user", {
         firstname: user.firstname,
@@ -13,47 +25,65 @@ async function postUser(user) {
     });
 }
 
-async function connection (user){
-    const response = await axios.post(API_URL + "/user/login",user);
-    await AsyncStorage.setItem("token", response.data.token);
-    axios.defaults.headers.common["Authorization"] = response.data.token;
+/**
+ * Connect the user and save the token
+ *
+ * @param {object} user user object
+ * @param {string} user.login login of the user
+ * @param {string} user.password password of the user
+ *
+ * @throws {Error} if the request failed
+ *
+ * @returns {Promise<void>}
+ */
+async function connection(user) {
+    return (await axios.post(API_URL + "/user/login", user)).data.token;
 }
 
-async function getUser() {
-    try {
-        const Authorization = await getAuthorizationHeader();
-        const response = await axios.get(API_URL + "/user/me", {
-            headers: { Authorization: Authorization },
-        });
-        return response.data;
-    } catch (error) {
-        console.error(error);
-        //! à faire quand getToken API sera fait
-    }
+/**
+ * Get the user associated with the token
+ *
+ * @throws {Error} if the request failed
+ * @returns {Promise<object>} user object
+ */
+async function getUser(token) {
+    return (
+        await axios.get(API_URL + "/user/me", {
+            headers: { Authorization: token },
+        })
+    ).data;
 }
 
-async function updateUser(updateValues) {
-    try {
-        const Authorization = await getAuthorizationHeader();
-        const response = await axios.patch(
-            API_URL + "/user/",
-            updateValues,
-            { headers: { Authorization: Authorization } }
-        );
-
-        return response.data;
-
-    } catch (error) {
-        //! à pas oublier et demander à cyril comment ça fonctionne
-    }
+/**
+ * Update the user associated with the token
+ *
+ * @param {object} updatedValues updated values of the user
+ * @param {string=} updatedValues.firstname first name of the user
+ * @param {string=} updatedValues.lastname last name of the user
+ * @param {string=} updatedValues.username username of the user
+ * @param {string=} updatedValues.email email of the user
+ *
+ * @throws {Error} if the request failed
+ *
+ * @returns {Promise<void>}
+ */
+async function updateUser(updatedValues, token) {
+    await axios.patch(API_URL + "/user/", updatedValues, {
+        headers: { Authorization: token },
+    });
 }
 
-async function deleteUser() {
-    try {
-        const response = await axios.delete(API_URL + "/user/", {
-            headers: { Authorization: getAuthorizationHeader() },
-        });
-    } catch (error) {}
+/**
+ * Delete the user associated with the token
+ *
+ * @throws {Error} if the request failed
+ *
+ * @returns {Promise<void>}
+ */
+async function deleteUser(token) {
+    await axios.delete(API_URL + "/user/", {
+        headers: { Authorization: token },
+    });
 }
 
-export { postUser, connection , getUser, updateUser, deleteUser };
+export { postUser, connection, getUser, updateUser, deleteUser };

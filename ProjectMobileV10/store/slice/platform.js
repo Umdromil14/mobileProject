@@ -14,12 +14,12 @@ export const platformSlice = createSlice({
             });
             state.nextIdPlatform += 1;
         },
-        // removePlatform: (state, action) => {
-        //     state.platforms = state.platforms.filter(elem => action.payload.id !== elem.id)
-        // }
+        setPlatforms: (state, action) => {
+            state.platforms = action.payload;
+        }
     },
 })
 
-export const { addPlatform, removePlatform } = platformSlice.actions;
+export const { addPlatform, setPlatforms } = platformSlice.actions;
 
 export default platformSlice.reducer;

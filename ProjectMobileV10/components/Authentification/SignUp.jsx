@@ -20,6 +20,30 @@ import { globalStyles } from "../../styles/globalStyles";
 import logo from "../../images/logo.png";
 import { connection, postUser } from "../../APIAccess/user";
 import { isValidForm } from "../../tools/isValidForm";
+import { useDispatch } from "react-redux";
+import { addToken } from "../../store/slice/token";
+
+const styles = StyleSheet.create({
+    tinyLogo: {
+        top: 50,
+        width: 100,
+        height: 100,
+        marginBottom: 100,
+    },
+    form: {
+        backgroundColor: "#59A52C",
+        borderRadius: 20,
+        width: 300,
+    },
+    input: {
+        paddingTop: 12,
+        paddingBottom: 12,
+        paddingLeft: 16,
+        paddingRight: 16,
+        backgroundColor: "#fff",
+        borderTopLeftRadius: 20,
+    },
+});
 
 /**
  * Sign up page
@@ -30,24 +54,24 @@ import { isValidForm } from "../../tools/isValidForm";
  * @returns {JSX.Element}
  */
 function SignUp({ navigation }) {
+    const dispatch = useDispatch();
     const [form, setForm] = useState({
-        username: null,
-        email: null,
-        password: null,
-        repeatPassword: null,
-        firstname: null,
-        lastname: null,
-        errorFirstname: "",
-        errorLastname: "",
-        errorUsername: "",
-        errorMail: "",
-        errorPassword: "",
-        viewStyle: styles.form,
+        username: undefined,
+        email: undefined,
+        password: undefined,
+        repeatPassword: undefined,
+        firstname: undefined,
+        lastname: undefined,
+        errorFirstname: undefined,
+        errorLastname: undefined,
+        errorUsername: undefined,
+        errorMail: undefined,
+        errorPassword: undefined,
     });
     const [showPassword, setShowPassword] = useState(false);
 
     /**
-     * Clean the form
+     * Clean the form and the errors
      *
      * @returns {void}
      */
@@ -60,24 +84,35 @@ function SignUp({ navigation }) {
             repeatPassword: undefined,
             firstname: undefined,
             lastname: undefined,
-            viewStyle: styles.form,
         });
-        cleanError();
+        displayError();
     }
 
     /**
-     * Clean the error message
+     * Display the errors or clean them if there is no argument
+     *
+     * @param {string} errorUsername - The error of the username
+     * @param {string} errorMail - The error of the email
+     * @param {string} errorFirstname - The error of the firstname
+     * @param {string} errorLastname - The error of the lastname
+     * @param {string} errorPassword - The error of the password
      *
      * @returns {void}
      */
-    function cleanError() {
+    function displayError(
+        errorUsername,
+        errorMail,
+        errorFirstname,
+        errorLastname,
+        errorPassword
+    ) {
         setForm({
             ...form,
-            errorFirstname: "",
-            errorLastname: "",
-            errorUsername: "",
-            errorMail: "",
-            errorPassword: "",
+            errorUsername: errorUsername,
+            errorMail: errorMail,
+            errorFirstname: errorFirstname,
+            errorLastname: errorLastname,
+            errorPassword: errorPassword,
         });
     }
 
@@ -87,39 +122,35 @@ function SignUp({ navigation }) {
      * @returns {void}
      */
     function register() {
-        if (isValidForm(form, setForm,styles.form.height)) {
+        if (isValidForm(form, setForm)) {
             postUser(form)
                 .then(() => {
                     connection({
                         login: form.username,
                         password: form.password,
-                    }).then(() => {
+                    }).then((token) => {
+                        dispatch(addToken(`Bearer ${token}`));
                         cleanForm();
                         navigation.navigate("Home");
                     });
                 })
                 .catch((err) => {
-                    console.log(err.response?.data?.message);
                     if (
                         err.response?.data?.message.includes("username") ||
                         err.response?.data?.message.includes("email")
                     ) {
-                        setForm({
-                            ...form,
-                            errorUsername:
-                                "This username or email is already taken",
-                            errorMail:
-                                "This username or email is already taken",
-                            errorFirstname: "",
-                            errorLastname: "",
-                            errorPassword: "",
-                        });
+                        displayError(
+                            "Username already taken",
+                            "Email already taken"
+                        );
                     } else {
-                        setForm({
-                            ...form,
-                            errorPassword:
-                                "An error occured, please try again later...",
-                        });
+                        displayError(
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            "An error occured"
+                        );
                     }
                 });
         }
@@ -130,25 +161,26 @@ function SignUp({ navigation }) {
      *
      * @returns {void}
      */
-    const toggleShowPassword = () => {
+    function toggleShowPassword() {
         setShowPassword(!showPassword);
-    };
+    }
 
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
             <SafeAreaView style={globalStyles.background}>
                 <Image style={styles.tinyLogo} source={logo} />
-                <View style={form.viewStyle}>
+                <View style={styles.form}>
                     <Text style={globalStyles.textForm}>First name</Text>
                     <Input
                         inputStyle={globalStyles.inputLabel}
                         inputContainerStyle={globalStyles.inputContainer}
-                        placeholder="First name"
+                        placeholder="Firstname"
                         value={form.firstname}
-                        onChangeText={(text) =>
+                        onChangeText={(firstname) =>
                             setForm({
                                 ...form,
-                                firstname: text.length === 0 ? null : text,
+                                firstname:
+                                    firstname.length === 0 ? null : firstname,
                             })
                         }
                         leftIcon={<FontAwesomeIcon icon={faUser} size={24} />}
@@ -159,12 +191,13 @@ function SignUp({ navigation }) {
                     <Input
                         inputStyle={globalStyles.inputLabel}
                         inputContainerStyle={globalStyles.inputContainer}
-                        placeholder="Last name"
+                        placeholder="Lastname"
                         value={form.lastname}
-                        onChangeText={(text) =>
+                        onChangeText={(lastname) =>
                             setForm({
                                 ...form,
-                                lastname: text.length === 0 ? null : text,
+                                lastname:
+                                    lastname.length === 0 ? null : lastname,
                             })
                         }
                         leftIcon={<FontAwesomeIcon icon={faUser} size={24} />}
@@ -180,8 +213,8 @@ function SignUp({ navigation }) {
                         inputContainerStyle={globalStyles.inputContainer}
                         placeholder="Username"
                         value={form.username}
-                        onChangeText={(text) =>
-                            setForm({ ...form, username: text })
+                        onChangeText={(username) =>
+                            setForm({ ...form, username })
                         }
                         leftIcon={<FontAwesomeIcon icon={faUser} size={24} />}
                         errorMessage={form.errorUsername}
@@ -196,9 +229,7 @@ function SignUp({ navigation }) {
                         inputContainerStyle={globalStyles.inputContainer}
                         placeholder="Email"
                         value={form.email}
-                        onChangeText={(text) =>
-                            setForm({ ...form, email: text })
-                        }
+                        onChangeText={(email) => setForm({ ...form, email })}
                         leftIcon={
                             <FontAwesomeIcon icon={faEnvelope} size={24} />
                         }
@@ -217,8 +248,8 @@ function SignUp({ navigation }) {
                         inputContainerStyle={globalStyles.inputContainer}
                         placeholder="Password"
                         value={form.password}
-                        onChangeText={(text) =>
-                            setForm({ ...form, password: text })
+                        onChangeText={(password) =>
+                            setForm({ ...form, password })
                         }
                         leftIcon={<FontAwesomeIcon icon={faLock} size={24} />}
                         rightIcon={
@@ -240,10 +271,10 @@ function SignUp({ navigation }) {
                     <Input
                         inputStyle={globalStyles.inputLabel}
                         inputContainerStyle={globalStyles.inputContainer}
-                        placeholder="Repeat Password"
+                        placeholder="Repeat password"
                         value={form.repeatPassword}
-                        onChangeText={(text) =>
-                            setForm({ ...form, repeatPassword: text })
+                        onChangeText={(repeatPassword) =>
+                            setForm({ ...form, repeatPassword })
                         }
                         leftIcon={<FontAwesomeIcon icon={faLock} size={24} />}
                         rightIcon={
@@ -256,7 +287,9 @@ function SignUp({ navigation }) {
                         }
                         secureTextEntry={!showPassword}
                     />
-                    <Text style={{ color: "#cc0000" }}>* Required fields</Text>
+                    <Text style={{ color: "#cc0000", paddingLeft: 10 }}>
+                        * Required fields
+                    </Text>
                 </View>
                 <Button
                     title="Register"
@@ -297,26 +330,4 @@ function SignUp({ navigation }) {
     );
 }
 
-const styles = StyleSheet.create({
-    tinyLogo: {
-        top: 50,
-        width: 100,
-        height: 100,
-        marginBottom: 100,
-    },
-    form: {
-        backgroundColor: "#59A52C",
-        borderRadius: 20,
-        height: 670,
-        width: 300,
-    },
-    input: {
-        paddingTop: 12,
-        paddingBottom: 12,
-        paddingLeft: 16,
-        paddingRight: 16,
-        backgroundColor: "#fff",
-        borderTopLeftRadius: 20,
-    },
-});
 export default SignUp;

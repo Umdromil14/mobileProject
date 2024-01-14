@@ -7,8 +7,8 @@ export const newGamesSlice = createSlice({
     },
     reducers: {
         addNewGames: (state, action) => {
-            state.newGames[action.payload.key]??=[];
-            state.newGames[action.payload.key].push(action.payload.values);
+            state.newGames[action.payload.key] ??= [];
+            state.newGames[action.payload.key].push(...action.payload.values);
         },
         clearNewGames: (state, action) => {
             state.newGames = {};

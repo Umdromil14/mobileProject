@@ -1,10 +1,18 @@
-import { Modal, View, Text, Button, StyleSheet, TextInput, KeyboardAvoidingView, Pressable } from "react-native";
+import { Modal, View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Pressable } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
-import { ValidateButton } from "../../tools/AllForForm";
-import { AirbnbRating } from "@rneui/themed";
+import { AirbnbRating, Button } from "@rneui/themed";
 import { useState } from "react";
 import { updateGame } from "../../APIAccess/game";
-import { DARK_GREY } from "../../tools/constants";
+import { DARK_GREY,GREEN } from "../../tools/constants";
+import { useSelector } from "react-redux";
+
+const styles = StyleSheet.create({
+    titles: [
+        globalStyles.whiteText,
+        globalStyles.textForm
+    ]
+});
+
 
 /**
  * Page with all the data that will be displayed about a game
@@ -25,7 +33,7 @@ function UpdateReview({
     comment,
     rating
 }) {
-
+    const token = useSelector((state) => state.token.token);
     const [newComment, setNewComment] = useState(comment);
     const [newRating, setNewRating] = useState(rating);
 
@@ -62,27 +70,60 @@ function UpdateReview({
                         placeholder="Your comment"
                         placeholderTextColor={globalStyles.whiteText}
                     />
-                    <View style={{ flexDirection: "row", justifyContent: "space-between", paddingBottom: 10 }}>
-                        <ValidateButton
-                            title={"Cancel"}
-                            containerStyle={[globalStyles.modifyButtonContainer, { width: 150, marginBottom: 10 }]}
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingBottom: 10,
+                        }}
+                    >
+                        <Button
+                            title="Cancel"
+                            titleStyle={{ fontWeight: "700" }}
+                            buttonStyle={{
+                                backgroundColor: GREEN,
+                                borderWidth: 0,
+                                borderRadius: 20,
+                            }}
+                            containerStyle={[
+                                globalStyles.modifyButtonContainer,
+                                { width: 150, marginBottom: 10 },
+                            ]}
                             onPress={() => {
                                 setNewRating(rating);
                                 setNewComment(comment);
                                 onClose({});
                             }}
                         />
-                        <ValidateButton
-                            title={"Update"}
-                            containerStyle={[globalStyles.modifyButtonContainer, { width: 150, marginBottom: 10 }]}
+                        <Button
+                            title="Update"
+                            containerStyle={[
+                                globalStyles.modifyButtonContainer,
+                                { width: 150, marginBottom: 10 },
+                            ]}
+                            buttonStyle={{
+                                backgroundColor: GREEN,
+                                borderWidth: 0,
+                                borderRadius: 20,
+                            }}
                             onPress={() => {
-                                if (newComment !== comment || newRating !== rating) {
+                                if (
+                                    newComment !== comment ||
+                                    newRating !== rating
+                                ) {
                                     updateGame(
-                                        publicationId, { review_comment: newComment, review_rating: newRating }
+                                        publicationId,
+                                        {
+                                            review_comment: newComment,
+                                            review_rating: newRating,
+                                        },
+                                        token
                                     );
-                                    onClose({ comment: newComment, rating: newRating });
-                                }
-                                else{
+                                    onClose({
+                                        comment: newComment,
+                                        rating: newRating,
+                                    });
+                                } else {
                                     onClose({});
                                 }
                             }}
@@ -93,12 +134,5 @@ function UpdateReview({
         </Modal>
     );
 }
-
-const styles = StyleSheet.create({
-    titles: [
-        globalStyles.whiteText,
-        globalStyles.textForm
-    ]
-});
 
 export default UpdateReview;

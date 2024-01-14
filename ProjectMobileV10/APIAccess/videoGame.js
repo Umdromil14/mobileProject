@@ -1,5 +1,4 @@
 import axios from "axios";
-import { getAuthorizationHeader } from "./AxiosInstance";
 import { API_URL } from "../tools/constants";
 
 /**
@@ -12,13 +11,13 @@ import { API_URL } from "../tools/constants";
  *
  * @throws {Error} if the request failed
  */
-async function getVideoGames(id, name) {
-    const Authorization = await getAuthorizationHeader();
-    const response = await axios.get(`${API_URL}/videoGame`, {
-        headers: { Authorization: Authorization },
-        params: { id, name },
-    });
-    return response.data;
+async function getVideoGames(id, name, token) {
+    return (
+        await axios.get(`${API_URL}/videoGame`, {
+            headers: { Authorization: token },
+            params: { id, name },
+        })
+    ).data;
 }
 
 export { getVideoGames };

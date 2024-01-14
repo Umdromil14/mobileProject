@@ -1,5 +1,4 @@
 import axios from "axios";
-import { getAuthorizationHeader } from "./AxiosInstance";
 import { API_URL } from "../tools/constants";
 import { getCategory } from "./category";
 import { getPlatforms } from "./platform";
@@ -27,30 +26,20 @@ import { addPlatform } from "../store/slice/platform";
  *
  * @throws {Error} if the request failed
  */
-async function getPublications(options) {
+async function getPublications(options,token) {
     options.genresIds =
         options.genresIds?.map((genreId) => genreId.toString()).join(",") ||
         undefined;
 
-    const Authorization = await getAuthorizationHeader();
-    const response = await axios.get(`${API_URL}/publication`, {
-        headers: { Authorization: Authorization },
+    return (await axios.get(`${API_URL}/publication`, {
+        headers: { Authorization: token },
         params: options,
-    });
-
-    return response.data;
+    })).data;
 }
 
-/**
- * @typedef {Object} VideoGame
- * @property {number} id the id of the video game
- * @property {string} name the name of the video game
- * @property {string} description the description of the video game
- * @property {string[]} platforms the platforms of the video game
- * @property {number[]} genresIds the genres of the video game
- */
 
 // TODO promise return
+// TODO remove
 /**
  * Get all video games with their platforms and genres
  *
@@ -71,7 +60,8 @@ async function getVideoGamesWithPlatformsAndGenres(
     genresIds,
     getOwnGames = false,
     page,
-    limit
+    limit,
+    token
 ) {
     const videoGames = [];
     const categories = await getCategory();
@@ -84,6 +74,7 @@ async function getVideoGamesWithPlatformsAndGenres(
         alphabetical: true,
         page,
         limit,
+        token
     });
     publications.forEach((publication) => {
         const videoGame = videoGames.find(
@@ -129,7 +120,7 @@ async function fillingData(platforms, newGames, dispatch) {
                 publicationsToAdd[element.platform_code].push(element);
             });
         }
-        const platformsToAdd = [{}];
+        const platformsToAdd = [];
         filterPlatform.forEach((platform) => {
             platformsToAdd.push(platform);
         });
