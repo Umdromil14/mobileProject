@@ -1,5 +1,6 @@
 import axios from "axios";
-import { API_URL, getAuthorizationHeader } from "./AxiosInstance";
+import { getAuthorizationHeader } from "./AxiosInstance";
+import { API_URL } from "../tools/constants";
 
 /**
  * Get all video games or video games by name or id

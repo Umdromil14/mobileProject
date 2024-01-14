@@ -1,5 +1,6 @@
 import axios from "axios";
-import { API_URL, getAuthorizationHeader } from "./AxiosInstance";
+import { getAuthorizationHeader } from "./AxiosInstance";
+import { API_URL } from "../tools/constants";
 
 /**
  * Get games of the user
@@ -37,18 +38,19 @@ async function getGamesByVideoGame(videoGameId) {
     return response.data;
 }
 
-async function updateGame(publicationId, updateValues){
-    try{
-        const Authorization = await getAuthorizationHeader();
-        const response = await axios.patch(`${API_URL}/game/user/${publicationId}`, updateValues, 
-            {headers: { Authorization: Authorization },
+async function updateGame(publicationId, updateValues) {
+    const Authorization = await getAuthorizationHeader();
+    const response = await axios.patch(`${API_URL}/game/user/${publicationId}`, updateValues,
+        {
+            headers: { Authorization: Authorization },
         });
-        return response.data;
-    }
-    catch(error){
-        console.log(error.request);
-    }
-    
+    return response.data;
 }
 
-export { getGames, getGamesByVideoGame, updateGame };
+async function createGame(valuesToAdd){
+    const Authorization = await getAuthorizationHeader();
+    const response = await axios.post(`${API_URL}/game/user`, valuesToAdd,{headers: {Authorization: Authorization}});
+    return response.status;
+}
+
+export { getGames, getGamesByVideoGame, updateGame, createGame };

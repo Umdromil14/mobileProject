@@ -1,10 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// const API_URL = "http://192.168.163.242:3001";
-const API_BASE_URL = "http://192.168.1.61:3001"
-const API_URL = `${API_BASE_URL}/v1`;
-// const API_URL = "http://192.168.137.1:3001";
-
 async function getToken() {
     try {
         const token = await AsyncStorage.getItem("token");
@@ -20,4 +15,4 @@ async function getAuthorizationHeader() {
     return token;
 }
 
-export { API_URL, getAuthorizationHeader, getToken, API_BASE_URL };
+export { getAuthorizationHeader, getToken };

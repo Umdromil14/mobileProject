@@ -22,7 +22,7 @@ import {
 } from "../../tools/constants";
 import FilterModal from "./FilterModal";
 import ErrorText from "../Utils/ErrorText";
-import { API_BASE_URL } from "../../APIAccess/AxiosInstance";
+import { API_BASE_URL } from "../../tools/constants";
 
 const DEFAULT_PLATFORM = "PC";
 const LIMIT = 48;

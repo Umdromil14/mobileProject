@@ -1,10 +1,7 @@
-import config from "../config";
 import axios from "axios";
-import { Alert } from "react-native";
-import AwesomeAlert from "react-native-awesome-alerts";
-import { API_URL, getAuthorizationHeader } from "./AxiosInstance";
+import { getAuthorizationHeader } from "./AxiosInstance";
+import { API_URL } from "../tools/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-//! vérifier AxiosInstance
 
 async function postUser(user) {
     await axios.post(API_URL + "/user", {
@@ -58,5 +55,6 @@ async function deleteUser() {
         });
     } catch (error) {}
 }
+
 
 export { postUser, connection , getUser, updateUser, deleteUser };

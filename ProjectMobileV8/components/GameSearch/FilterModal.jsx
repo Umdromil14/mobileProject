@@ -13,7 +13,7 @@ import { DARK_GREY, GREEN } from "../../tools/constants";
 import ErrorText from "../Utils/ErrorText";
 import ImageButton from "../Utils/ImageButton";
 import DropdownList from "../Utils/DropdownList";
-import { API_BASE_URL } from "../../APIAccess/AxiosInstance";
+import { API_BASE_URL } from "../../tools/constants";
 
 const BOX_PADDING = 20;
 const MODAL_DIVISION = ["30%", "55%", "15%"];

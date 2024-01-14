@@ -7,7 +7,7 @@ import { globalStyles } from "../styles/globalStyles";
 import Header from "./header";
 import { Dialog } from "@rneui/themed";
 import { getPublications, getVideoGamesWithPlatformsAndGenres } from "../APIAccess/publication";
-import images from "../images/image";
+import { API_BASE_URL } from "../tools/constants";
 
 const IMAGE_MARGIN = 5;
 const IMAGE_WIDTH = Dimensions.get("window").width / 3 - IMAGE_MARGIN * 2;
@@ -58,7 +58,7 @@ function NewGames({ route, navigation }) {
                             navigation.navigate("GamePreview",
                                 { videoGameId: item.id, actualPlatform: platform.code })
                         }>
-                        <Image style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }} source={images[item.id]} />
+                        <Image style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }} source={{uri: `${API_BASE_URL}/videoGame/${item.id}.png`}} />
                     </Pressable>);
                 }}
                 style={globalStyles.container}

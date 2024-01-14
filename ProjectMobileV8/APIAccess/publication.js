@@ -1,6 +1,10 @@
 import axios from "axios";
-import { API_URL, getAuthorizationHeader, API_BASE_URL } from "./AxiosInstance";
+import { getAuthorizationHeader } from "./AxiosInstance";
+import { API_URL } from "../tools/constants";
 import { getCategory } from "./category";
+import { getPlatforms } from "./platform";
+import { addNewGames } from "../store/slice/newGames";
+import { addPlatform } from "../store/slice/platform";
 
 /**
  * Get publications
@@ -26,13 +30,11 @@ async function getPublications(options) {
     options.genresIds =
         options.genresIds?.map((genreId) => genreId.toString()).join(",") ||
         undefined;
-
     const Authorization = await getAuthorizationHeader();
     const response = await axios.get(`${API_URL}/publication`, {
         headers: { Authorization: Authorization },
         params: options,
     });
-
     return response.data;
 }
 
@@ -105,4 +107,75 @@ async function getVideoGamesWithPlatformsAndGenres(
     return videoGames;
 }
 
-export { getPublications, getVideoGamesWithPlatformsAndGenres };
+async function fillingData(platforms, newGames, dispatch) {
+    
+    const fillData = (allPlatforms, allGames) => {
+        const publicationsToAdd = {};
+        const filterPlatform = allPlatforms.filter((platform) => {
+            return allGames.some(element => {
+                if (typeof element === "string") {
+                    return element === platform.code;
+                }
+                return element.platform_code === platform.code;
+            });
+        });
+        
+        if (!(typeof allGames[0] === "string")) {
+            allGames.forEach(element => {
+                publicationsToAdd[element.platform_code] ??= [];
+                publicationsToAdd[element.platform_code].push(element);
+            });
+        }
+        const platformsToAdd = [{}];
+        filterPlatform.forEach((platform) => {
+            platformsToAdd.push(platform);
+        });
+        if (Object.keys(publicationsToAdd).length === 0) {
+            return {platformsToAdd, publicationsToAdd : newGames};
+        }
+        return {platformsToAdd, publicationsToAdd};
+    }
+
+    if (Object.keys(newGames).length === 0) {
+        try {
+            const newPublications = [];
+            const allPlatforms = await getPlatforms();
+            const response = []
+            for (const platform of allPlatforms){
+                try {
+                    dispatch(addPlatform(platform));
+                    response.push(await getPublications({ platformCode: platform.code, getLastGames: true }));
+                } catch (error) {
+                    if (error.response?.request?.status !== 404) {
+                        console.log(error);
+                    }
+                }
+            }
+            response.forEach((publications)=> {
+                publications.forEach(publication => {
+                    let alreadyInNewGames = false;
+                    if(newGames[publication.platform_code]){
+                        newGames[publication.platform_code].forEach((game) => {
+                            if(game.id === publication.id){
+                                alreadyInNewGames = true;
+                            }
+                        });
+                    }
+                    if(!alreadyInNewGames){
+                        dispatch(addNewGames({ key: publication.platform_code, values: publication }));
+                        newPublications.push(publication);
+                    }
+                });
+            });
+            return fillData(allPlatforms, newPublications);
+        } catch (error) {
+            if (error.response?.request?.status !== 404) {
+                console.log(error);
+            }
+            return;
+        }
+    }
+    return fillData(platforms, Object.keys(newGames));
+}
+
+export { getPublications, getVideoGamesWithPlatformsAndGenres, fillingData };

@@ -1,18 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Image, View, StyleSheet, Pressable, Dimensions, Text, FlatList } from "react-native";
 import { useSelector, useDispatch } from 'react-redux';
 import { globalStyles } from "../../styles/globalStyles";
 import { Dialog } from "@rneui/themed";
 import Header from "../header";
 import { GREEN, TAB_NAVIGATOR_HEIGHT, HEADER_HEIGHT } from "../../tools/constants";
-import { getPublications } from "../../APIAccess/publication";
-import { getPlatforms } from "../../APIAccess/platform";
-import images from "../../images/image";
+import { getPublications, fillingData } from "../../APIAccess/publication";
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { addNewGames } from "../../store/slice/newGames";
-import { addPlatform } from "../../store/slice/platform";
+import { API_BASE_URL } from "../../tools/constants";
 
 const IMAGE_MARGIN = 5;
 const IMAGE_WIDTH = Dimensions.get("window").width / 3 - IMAGE_MARGIN * 2;
@@ -47,7 +44,7 @@ function FlatListVideoGame({ platform, publicationsData }) {
 
     return (
         <FlatList
-            data={platform !== undefined ? publicationsData[selectedPublications].slice(-5) : gameData ? gameData : publicationsData}
+            data={platform !== undefined ? publicationsData[selectedPublications].slice(-5) : gameData}
             renderItem={({ item }) =>
                 <Pressable
                     style={{ marginLeft: IMAGE_MARGIN }}
@@ -55,7 +52,7 @@ function FlatListVideoGame({ platform, publicationsData }) {
                         navigation.navigate("GamePreview",
                             { videoGameId: item.video_game_id, actualPlatform: item.platform_code })
                     }>
-                    <Image style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }} source={images[item.video_game_id]} />
+                    <Image style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }} source={{ uri: `${API_BASE_URL}/videoGame/${item.video_game_id}.png` }} />
                 </Pressable>
             }
             horizontal={true}
@@ -84,74 +81,46 @@ function FlatListVideoGame({ platform, publicationsData }) {
 function FlatListPlatform() {
 
     const navigation = useNavigation();
-
-    const [platformsData, setPlatformsData] = useState([]);
-    const [publications, setPublications] = useState([]);
-    const [myGames, setMyGames] = useState([]);
-
     const platforms = useSelector(state => state.platformList.platforms);
     const newGames = useSelector(state => state.newGames.newGames);
     const dispatch = useDispatch();
+
+    const [platformsData, setPlatformsData] = useState([]);
+    const [publications, setPublications] = useState({});
+    const [myGames, setMyGames] = useState([]);
 
     const [load, setLoad] = useState({
         loading: true,
         errorMessage: "",
     });
 
-    const fillData = () => {
-        const filterPlatform = platforms.filter((platform) => {
-            return (Object.keys(newGames)).some(key => {
-                return key === platform.code;
-            })
-        });
-        setPlatformsData([{}, ...filterPlatform]);
-        setPublications(newGames);
-    }
-
-    useEffect(() => {
-        const fetchData = async () => {
-            getPublications({ getOwnGames: true }).then((response) => {
-                setMyGames(response);
-            }).catch((reason) => {
-                if (reason.response.request.status !== 404) {
-                    console.log(reason);
-                }
-            });
-            if (Object.keys(newGames).length === 0) {
-                try {
-                    const [allPlatforms, newPublications] = await Promise.all([
-                        getPlatforms(),
-                        getPublications({ getLastGames: true })
-                    ]);
-                    allPlatforms.forEach(platform => {
-                        dispatch(addPlatform(platform));
-                    });
-                    newPublications.forEach(publication => {
-                        dispatch(addNewGames({ key: publication.platform_code, values: publication }));
-                    });
-                } catch (error) {
-                    if (error.response.request.status !== 404) {
-                        console.log(reason);
-                    }
-                }
+    function getPublicationsAndPlatformData() {
+        getPublications({ getOwnGames: true }).then((response) => {
+            setMyGames(response);
+        }).catch((reason) => {
+            if (reason.response?.request?.status !== 404) {
+                console.log(reason);
             }
-            fillData();
-            setLoad({
-                loading: false,
-                errorMessage: ""
-            });
-        }
-        fetchData();
-    }, []);
-
+        });
+        fillingData(platforms, newGames, dispatch).then((value) => {
+            setPlatformsData(value.platformsToAdd);
+            setPublications(value.publicationsToAdd);
+        });
+        setLoad({
+            loading: false,
+            errorMessage: ""
+        });
+    }
+    
     let contentPlatforms;
     if (load.loading) {
         contentPlatforms = (<Dialog.Loading loadingProps={{ color: GREEN }} />);
+        getPublicationsAndPlatformData();
     }
     else if (load.errorMessage) {
         contentPlatforms = (<ErrorText errorMessage={load.errorMessage} />);
     }
-    else {
+    else if (!load.loading && Object.keys(publications).length > 0 && platformsData.length > 1){
         contentPlatforms = (
             <FlatList
                 data={platformsData}
@@ -194,7 +163,7 @@ function Discover() {
         <View style={{
             flexDirection: 'column',
         }}>
-            <Header onSearchChange={setSearch} />
+            <Header onSearch={setSearch} />
             <View
                 style={{ paddingTop: 20, paddingLeft: 20, height: Dimensions.get("window").height - TAB_NAVIGATOR_HEIGHT - HEADER_HEIGHT }}
             >
