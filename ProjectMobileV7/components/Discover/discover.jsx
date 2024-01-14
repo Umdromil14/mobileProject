@@ -1,17 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Image, View, StyleSheet, Pressable, Dimensions, Text, FlatList } from "react-native";
 import { useSelector, useDispatch } from 'react-redux';
 import { globalStyles } from "../../styles/globalStyles";
 import { Dialog } from "@rneui/themed";
-import Header from "../Header";
+import Header from "../header";
 import { GREEN, TAB_NAVIGATOR_HEIGHT, HEADER_HEIGHT } from "../../tools/constants";
-import { getPublications, fillingData } from "../../APIAccess/publication";
+import { getPublications } from "../../APIAccess/publication";
+import { getPlatforms } from "../../APIAccess/platform";
+import images from "../../images/image";
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChevronRight, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { API_BASE_URL } from "../../tools/constants";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { addNewGames } from "../../store/slice/newGames";
+import { addPlatform } from "../../store/slice/platform";
 
-const MAGNIFYING_GLASS_SIZE = 25;
 const IMAGE_MARGIN = 5;
 const IMAGE_WIDTH = Dimensions.get("window").width / 3 - IMAGE_MARGIN * 2;
 const IMAGE_HEIGHT = IMAGE_WIDTH * 1.36;
@@ -45,7 +47,7 @@ function FlatListVideoGame({ platform, publicationsData }) {
 
     return (
         <FlatList
-            data={platform !== undefined ? publicationsData[selectedPublications].slice(-5) : gameData}
+            data={platform !== undefined ? publicationsData[selectedPublications].slice(-5) : gameData ? gameData : publicationsData}
             renderItem={({ item }) =>
                 <Pressable
                     style={{ marginLeft: IMAGE_MARGIN }}
@@ -53,7 +55,7 @@ function FlatListVideoGame({ platform, publicationsData }) {
                         navigation.navigate("GamePreview",
                             { videoGameId: item.video_game_id, actualPlatform: item.platform_code })
                     }>
-                    <Image style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }} source={{ uri: `${API_BASE_URL}/videoGame/${item.video_game_id}.png` }} />
+                    <Image style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }} source={images[item.video_game_id]} />
                 </Pressable>
             }
             horizontal={true}
@@ -82,60 +84,83 @@ function FlatListVideoGame({ platform, publicationsData }) {
 function FlatListPlatform() {
 
     const navigation = useNavigation();
+
+    const [platformsData, setPlatformsData] = useState([]);
+    const [publications, setPublications] = useState([]);
+    const [myGames, setMyGames] = useState([]);
+
     const platforms = useSelector(state => state.platformList.platforms);
     const newGames = useSelector(state => state.newGames.newGames);
     const dispatch = useDispatch();
 
-    const [platformsData, setPlatformsData] = useState([]);
-    const [publications, setPublications] = useState({});
-    const [myGames, setMyGames] = useState([]);
     const [load, setLoad] = useState({
         loading: true,
         errorMessage: "",
     });
 
-    function getPublicationsAndPlatformData() {
-        getPublications({ getOwnGames: true }).then((response) => {
-            setMyGames(response);
-        }).catch((reason) => {
-            if (reason.response?.request?.status !== 404) {
-                console.log(reason);
-            }
+    const fillData = () => {
+        const filterPlatform = platforms.filter((platform) => {
+            return (Object.keys(newGames)).some(key => {
+                return key === platform.code;
+            })
         });
-        fillingData(platforms, newGames, dispatch).then((value) => {
-            setPlatformsData(value.platformsToAdd);
-            setPublications(value.publicationsToAdd);
-        });
-        setLoad({
-            loading: false,
-            errorMessage: ""
-        });
+        setPlatformsData([{}, ...filterPlatform]);
+        setPublications(newGames);
     }
-    
+
+    useEffect(() => {
+        const fetchData = async () => {
+            getPublications({ getOwnGames: true }).then((response) => {
+                setMyGames(response);
+            }).catch((reason) => {
+                if (reason.response.request.status !== 404) {
+                    console.log(reason);
+                }
+            });
+            if (Object.keys(newGames).length === 0) {
+                try {
+                    const [allPlatforms, newPublications] = await Promise.all([
+                        getPlatforms(),
+                        getPublications({ getLastGames: true })
+                    ]);
+                    allPlatforms.forEach(platform => {
+                        dispatch(addPlatform(platform));
+                    });
+                    newPublications.forEach(publication => {
+                        dispatch(addNewGames({ key: publication.platform_code, values: publication }));
+                    });
+                } catch (error) {
+                    if (error.response.request.status !== 404) {
+                        console.log(reason);
+                    }
+                }
+            }
+            fillData();
+            setLoad({
+                loading: false,
+                errorMessage: ""
+            });
+        }
+        fetchData();
+    }, []);
+
     let contentPlatforms;
     if (load.loading) {
         contentPlatforms = (<Dialog.Loading loadingProps={{ color: GREEN }} />);
-        getPublicationsAndPlatformData();
     }
     else if (load.errorMessage) {
         contentPlatforms = (<ErrorText errorMessage={load.errorMessage} />);
     }
-    else if (!load.loading && Object.keys(publications).length > 0 && platformsData.length > 1){
+    else {
         contentPlatforms = (
             <FlatList
                 data={platformsData}
                 renderItem={({ item }) => {
                     return (
                         <View style={styles.outsideFlatlist}>
-                            <Pressable onPress={() => item.abbreviation
-                                        ? navigation.navigate("Games", {
-                                              defaultPlatform: item.code,
-                                              sortByDate: true,
-                                              getOwnGames: false,
-                                          })
-                                        : navigation.navigate("Home", {
-                                              screen: "Games",
-                                          })
+                            <Pressable onPress={() => item.abbreviation ?
+                                navigation.navigate("NewGames", { platform: item, newGame: true }) :
+                                navigation.navigate("Home", { screen: "Games" })
                             }
                                 style={{ flexDirection: "row" }}
                             >
@@ -163,52 +188,59 @@ function FlatListPlatform() {
  */
 function Discover() {
 
+    const [search, setSearch] = useState("");
+
     return (
         <View style={{
             flexDirection: 'column',
         }}>
-            <Header />
+            <Header onSearchChange={setSearch} />
             <View
                 style={{ paddingTop: 20, paddingLeft: 20, height: Dimensions.get("window").height - TAB_NAVIGATOR_HEIGHT - HEADER_HEIGHT }}
             >
                 <FlatListPlatform />
             </View>
-            <View
+        </View>
+    );
+}
+
+function ErrorText({ errorMessage }) {
+    return (
+        <View style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+        }}>
+            <Text
                 style={{
-                    position: "absolute",
-                    bottom:
-                        Dimensions.get("window").height -
-                        TAB_NAVIGATOR_HEIGHT -
-                        HEADER_HEIGHT / 2 -
-                        MAGNIFYING_GLASS_SIZE / 2,
-                    right: 15,
+                    color: "#ffffff",
+                    fontSize: 16,
+                    fontWeight: "bold",
                 }}
             >
-                <Pressable
-                    onPress={() => {
-                        navigation.navigate("Games", {
-                            getOwnGames: false,
-                        });
-                    }}
-                >
-                    <FontAwesomeIcon
-                        icon={faMagnifyingGlass}
-                        size={MAGNIFYING_GLASS_SIZE}
-                        style={{ color: "grey" }}
-                    />
-                </Pressable>
-            </View>
+                Whoops...
+            </Text>
+            <Text
+                style={{
+                    color: "grey",
+                    fontSize: 15,
+                    fontWeight: "bold",
+                }}
+            >
+                {errorMessage}
+            </Text>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     insideFlatlist: {
-        marginVertical: 20,
+        marginVertical: 20
     },
     outsideFlatlist: {
-        maxHeight: "100%",
-    },
-});
+        maxHeight: '100%'
+    }
+}
+)
 
 export default Discover;

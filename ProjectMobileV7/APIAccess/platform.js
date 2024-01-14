@@ -1,6 +1,5 @@
 import axios from "axios";
-import { getAuthorizationHeader } from "./AxiosInstance";
-import { API_URL } from "../tools/constants";
+import { API_URL, getAuthorizationHeader } from "./AxiosInstance";
 import { getPublications } from "./publication";
 
 /**

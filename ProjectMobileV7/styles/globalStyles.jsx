@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import { DARK_GREY } from "../tools/constants";
 
 export const globalStyles = StyleSheet.create({
 
@@ -18,7 +17,7 @@ export const globalStyles = StyleSheet.create({
         flexDirection:'row'
     },
     background : {
-        backgroundColor: DARK_GREY,
+        backgroundColor: '#463E3E',
         flex: 1, 
         alignItems: "center", 
         justifyContent: "center"

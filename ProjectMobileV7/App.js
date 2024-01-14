@@ -7,8 +7,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import store from './store'
 import { Provider } from 'react-redux'
-import SignUp from './components/Authentification/SignUp';
-import SignIn from './components/Authentification/SignIn';
+
+import SignUp from './components/signUp';
+import SignIn from './components/signIn';
 import Account from './components/Account/account';
 import DiscoverNav from './components/Discover/discoverNav';
 import Games from './components/GameSearch/Games';

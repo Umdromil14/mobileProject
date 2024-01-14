@@ -1,12 +1,8 @@
-const IP = "192.168.137.93";
-const PORT = "3001";
-const API_VERSION = "v2";
-const API_BASE_URL = `http://${IP}:${PORT}`;
-const API_URL = `${API_BASE_URL}/${API_VERSION}`;
-
 const HEADER_HEIGHT = 100;
 const TAB_NAVIGATOR_HEIGHT = 80;
+// const LIGHT_GREY = "#443D3D";
 const LIGHT_GREY = "#1f1f1f";
+// const DARK_GREY = "#2C2C2C";
 const DARK_GREY = "#181818";
 const GREEN = "#59A52C";
 const LOAD_SIZE = 70;
@@ -17,7 +13,5 @@ export {
     LIGHT_GREY,
     DARK_GREY,
     GREEN,
-    LOAD_SIZE,
-    API_BASE_URL,
-    API_URL,
+    LOAD_SIZE
 };

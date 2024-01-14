@@ -1,10 +1,6 @@
 import axios from "axios";
-import { getAuthorizationHeader } from "./AxiosInstance";
-import { API_URL } from "../tools/constants";
+import { API_URL, getAuthorizationHeader, API_BASE_URL } from "./AxiosInstance";
 import { getCategory } from "./category";
-import { getPlatforms } from "./platform";
-import { addNewGames } from "../store/slice/newGames";
-import { addPlatform } from "../store/slice/platform";
 
 /**
  * Get publications
@@ -19,7 +15,6 @@ import { addPlatform } from "../store/slice/platform";
  * @param {boolean=} options.getLastGames if `true`, only the last games are returned; default `false`
  * @param {boolean=} options.getVideoGamesInfo if `true`, the video game info is returned; default `false`
  * @param {boolean=} options.alphabetical if `true`, the publications are sorted alphabetically; default `false`
- * @param {boolean=} options.sortByDate if `true`, the publications are sorted by date (newest first); default `false`
  * @param {number=} options.page the page of the results
  * @param {number=} options.limit the number of results per page
  *
@@ -110,75 +105,4 @@ async function getVideoGamesWithPlatformsAndGenres(
     return videoGames;
 }
 
-async function fillingData(platforms, newGames, dispatch) {
-    
-    const fillData = (allPlatforms, allGames) => {
-        const publicationsToAdd = {};
-        const filterPlatform = allPlatforms.filter((platform) => {
-            return allGames.some(element => {
-                if (typeof element === "string") {
-                    return element === platform.code;
-                }
-                return element.platform_code === platform.code;
-            });
-        });
-        
-        if (!(typeof allGames[0] === "string")) {
-            allGames.forEach(element => {
-                publicationsToAdd[element.platform_code] ??= [];
-                publicationsToAdd[element.platform_code].push(element);
-            });
-        }
-        const platformsToAdd = [{}];
-        filterPlatform.forEach((platform) => {
-            platformsToAdd.push(platform);
-        });
-        if (Object.keys(publicationsToAdd).length === 0) {
-            return {platformsToAdd, publicationsToAdd : newGames};
-        }
-        return {platformsToAdd, publicationsToAdd};
-    }
-
-    if (Object.keys(newGames).length === 0) {
-        try {
-            const newPublications = [];
-            const allPlatforms = await getPlatforms();
-            const response = []
-            for (const platform of allPlatforms){
-                try {
-                    dispatch(addPlatform(platform));
-                    response.push(await getPublications({ platformCode: platform.code, getLastGames: true }));
-                } catch (error) {
-                    if (error.response?.request?.status !== 404) {
-                        console.log(error);
-                    }
-                }
-            }
-            response.forEach((publications)=> {
-                publications.forEach(publication => {
-                    let alreadyInNewGames = false;
-                    if(newGames[publication.platform_code]){
-                        newGames[publication.platform_code].forEach((game) => {
-                            if(game.id === publication.id){
-                                alreadyInNewGames = true;
-                            }
-                        });
-                    }
-                    if(!alreadyInNewGames){
-                        dispatch(addNewGames({ key: publication.platform_code, values: publication }));
-                        newPublications.push(publication);
-                    }
-                });
-            });
-            return fillData(allPlatforms, newPublications);
-        } catch (error) {
-            if (error.response?.request?.status !== 404) {
-                console.log(error);
-            }
-            return;
-        }
-    }
-    return fillData(platforms, Object.keys(newGames));
-}
-
-export { getPublications, getVideoGamesWithPlatformsAndGenres, fillingData };
+export { getPublications, getVideoGamesWithPlatformsAndGenres };

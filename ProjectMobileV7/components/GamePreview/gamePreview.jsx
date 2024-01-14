@@ -7,56 +7,14 @@ import { Tab, TabView, AirbnbRating, Button, Dialog, CheckBox } from "@rneui/the
 import { useState, useEffect, useCallback } from "react";
 import { getPublications } from "../../APIAccess/publication";
 import { getPlatformsByVideoGame } from "../../APIAccess/platform";
-import { getGamesByVideoGame, updateGame, createGame } from "../../APIAccess/game";
-import Header from "../Header";
-import { DARK_GREY, GREEN, API_BASE_URL } from "../../tools/constants";
+import { getGamesByVideoGame, updateGame } from "../../APIAccess/game";
+import Header from "../header";
+import { DARK_GREY, GREEN } from "../../tools/constants";
+import images from "../../images/image";
 import UpdateReview from "./UpdateReviewModal";
 
 const IMAGE_WIDTH = Dimensions.get("window").width / 3;
 const IMAGE_HEIGHT = IMAGE_WIDTH * 1.36;
-
-function CheckBoxInit(gameReviews, actualPublication, actualReview) {
-    let reviewExist = false;
-    gameReviews.forEach(review => {
-        if (actualPublication.id === review.publication_id) {
-            reviewExist = true;
-        }
-    });
-    let newReviews = [];
-    if (reviewExist) {
-        updateGame(actualPublication.id,
-            {
-                is_owned: !actualReview.is_owned
-            }).catch((reason) => { console.log(reason.request); });
-        newReviews = gameReviews.map(review => {
-            if (review.publication_id === actualPublication.id) {
-                review.is_owned = !actualReview.is_owned;
-            }
-            return review;
-        });
-    }
-    else {
-        createGame({
-            publication_id: actualPublication.id,
-            is_owned: true,
-            review_rating: 0,
-            review_comment: null,
-            review_date: null
-        });
-        actualReview = {
-            publication_id: actualPublication.id,
-            is_owned: true,
-            review_rating: 0,
-            review_comment: null,
-            review_date: null
-        };
-        newReviews = gameReviews;
-        newReviews.push(actualReview);
-    }
-    console.log("actual review après press:");
-    console.log(actualReview);
-    return newReviews;
-}
 
 /**
  * Page with all the data that will be displayed about a game
@@ -83,18 +41,12 @@ function GamePreview({ route, navigation }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [publications, platforms] = await Promise.all([
+                const [publications, platforms, games] = await Promise.all([
                     getPublications({ videoGameId: videoGameId, getVideoGamesInfo: true }),
                     getPlatformsByVideoGame(videoGameId),
+                    getGamesByVideoGame(videoGameId)
                 ]);
 
-                getGamesByVideoGame(videoGameId).then((response) => {
-                    setGameReviews(response);
-                }).catch((reason) => {
-                    if (reason.response?.request?.status !== 404) {
-                        console.log(reason);
-                    }
-                });
                 const previews = new Map();
                 platforms.forEach(platform => {
                     const values = publications.find(element =>
@@ -103,6 +55,7 @@ function GamePreview({ route, navigation }) {
                     previews.set(platform, values);
                 });
                 setGamePreviews(new Map(previews));
+                setGameReviews(games);
                 setLoad({
                     loading: false,
                     errorMessage: "",
@@ -120,9 +73,7 @@ function GamePreview({ route, navigation }) {
     const renderPreviews = () => {
         const keys = Array.from(gamePreviews.keys());
         const actualPublication = gamePreviews.get(keys.find(platform => platform.code === actualPlatform));
-        let actualReview = gameReviews.find((review) => review.publication_id === actualPublication.id);
-        console.log("actual review avant press:");
-        console.log(actualReview);
+        const actualReview = gameReviews.find((review) => review.publication_id === actualPublication.id);
         return (
             <>
                 <View style={{ flexDirection: 'row' }}>
@@ -135,18 +86,18 @@ function GamePreview({ route, navigation }) {
                 </View>
                 <View style={globalStyles.containerInsideView}>
                     <View style={{ height: IMAGE_HEIGHT, marginTop: 15 }}>
-                        <Image 
-                            style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }} 
-                            source={{ uri: `${API_BASE_URL}/videoGame/${videoGameId}.png` }} 
-                        />
+                        <Image style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }} source={images[videoGameId]} />
                         <View style={{ position: "absolute", alignSelf: "center", top: IMAGE_HEIGHT - 40 }}>
                             <CheckBox
-                                checked={actualReview ? actualReview.is_owned : false}
+                                checked={actualReview.is_owned}
                                 checkedIcon={<FontAwesomeIcon icon={faCircleCheck} size={40} style={{ color: GREEN }} />}
                                 uncheckedIcon={<FontAwesomeIcon icon={faCircleXmark} size={40} style={{ color: "red" }} />}
                                 onPress={() => {
-                                    CheckBoxInit(gameReviews, actualPublication, actualReview);
-                                    setGameReviews(newReviews);
+                                    updateGame(actualPublication.publication_id,
+                                        {
+                                            is_owned: !actualReview.is_owned
+                                        }).catch((reason) => { concole.log(reason.request) });
+                                    setChecked(!checked);
                                 }}
                                 containerStyle={{ backgroundColor: "transparent" }}
                             />
@@ -227,38 +178,37 @@ function GamePreview({ route, navigation }) {
                     <TabView.Item style={{ width: '100%' }}>
                         <ScrollView contentContainerStyle={{ padding: 20 }}>
                             <Text style={
-                                [actualPublication.description ? styles.textStyle : [styles.textStyle, { color: "grey" }], { fontSize: 15 }]
+                                [actualPublication.description ? styles.textStyle : [styles.textStyle, { color: "grey" }], {fontSize: 15}]
                             }>
                                 {actualPublication.description ? actualPublication.description : "Unknown"}
                             </Text>
                         </ScrollView>
                     </TabView.Item>
-                    <TabView.Item style={{ width: '100%' }}>
+                    <TabView.Item style={{ width: '100%'}}>
                         <ScrollView contentContainerStyle={{ padding: 20, alignSelf: "center" }}>
                             <AirbnbRating
                                 showRating={false}
                                 size={30}
-                                defaultRating={actualReview ? actualReview.review_rating : 0}
+                                defaultRating={actualReview.review_rating ? actualReview.review_rating : 0}
                                 onFinishRating={(number) => setRating(number)}
                                 isDisabled={true}
                             />
                             <Text
-                                style={[styles.textStyle, (actualReview ? globalStyles.whiteText : { color: "grey" }), { fontSize: 15 }]}
+                                style={[styles.textStyle, (actualReview.review_comment ? globalStyles.whiteText : { color: "grey" }), {fontSize: 15}]}
                             >
-                                {actualReview ? actualReview.review_comment : "No comment for the moment"}
+                                {actualReview.review_comment ? actualReview.review_comment : "No comment for the moment"}
                             </Text>
                             <ValidateButton
                                 title={"Modify"}
                                 containerStyle={globalStyles.modifyButtonContainer}
                                 onPress={() => setModalVisible(true)}
-                                disabled={!actualReview}
                             />
                         </ScrollView>
                     </TabView.Item>
                 </TabView>
                 <UpdateReview
                     isVisible={modalVisible}
-                    onClose={({ comment = undefined, rating = undefined }) => {
+                    onClose={({comment = undefined, rating = undefined}) => {
                         Alert.alert('Modal has been closed.');
                         setModalVisible(false);
                         if (comment !== undefined || rating !== undefined) {
@@ -273,8 +223,8 @@ function GamePreview({ route, navigation }) {
                         }
                     }}
                     publicationId={actualPublication.id}
-                    comment={actualReview ? actualReview.review_comment : null}
-                    rating={actualReview ? actualReview.review_rating : 0}
+                    comment={actualReview.review_comment}
+                    rating={actualReview.review_rating}
                 />
             </>
         );
@@ -338,6 +288,31 @@ function GamePreview({ route, navigation }) {
                 {content}
             </View>
         </>
+    );
+}
+
+function ErrorText({ errorMessage }) {
+    return (
+        <View style={styles.inner}>
+            <Text
+                style={{
+                    color: "#ffffff",
+                    fontSize: 16,
+                    fontWeight: "bold",
+                }}
+            >
+                Whoops...
+            </Text>
+            <Text
+                style={{
+                    color: "grey",
+                    fontSize: 15,
+                    fontWeight: "bold",
+                }}
+            >
+                {errorMessage}
+            </Text>
+        </View>
     );
 }
 
