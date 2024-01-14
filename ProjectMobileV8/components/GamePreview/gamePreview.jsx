@@ -95,7 +95,6 @@ function GamePreview({ route, navigation }) {
                         console.log(reason);
                     }
                 });
-
                 const previews = new Map();
                 platforms.forEach(platform => {
                     const values = publications.find(element =>

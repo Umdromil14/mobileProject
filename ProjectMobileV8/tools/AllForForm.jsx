@@ -21,7 +21,9 @@ function InputWithLabel({
 }) {
     return (
         <>
-            <Text style={labelStyle ? labelStyle : globalStyles.textForm}>{label}</Text>
+            <Text style={labelStyle ? labelStyle : globalStyles.textForm}>
+                {label}
+            </Text>
             <Input
                 inputStyle={inputStyle ? inputStyle : globalStyles.inputLabel}
                 inputContainerStyle={
@@ -56,10 +58,7 @@ function ValidateButton({
     return (
         <Button
             title={title}
-            titleStyle={
-                titleStyle
-                    ? titleStyle
-                    : { fontWeight: "700" }}
+            titleStyle={titleStyle ? titleStyle : { fontWeight: "700" }}
             buttonStyle={
                 buttonStyle
                     ? buttonStyle
@@ -73,10 +72,10 @@ function ValidateButton({
                 containerStyle
                     ? containerStyle
                     : {
-                        width: 200,
-                        marginHorizontal: 50,
-                        marginVertical: 10,
-                        paddingTop : 100
+                          width: 200,
+                          marginHorizontal: 50,
+                          marginVertical: 10,
+                          paddingTop: 100,
                       }
             }
             onPress={onPress}

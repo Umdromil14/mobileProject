@@ -28,6 +28,7 @@ function FlatListVideoGame({ platform, publicationsData }) {
     const navigation = useNavigation();
     let actualVideoGameId = 0;
     let gameData = [];
+
     if (platform === undefined && publicationsData !== undefined) {
         gameData = publicationsData.filter((publication) => {
             if (publication.video_game_id !== actualVideoGameId) {
@@ -155,10 +156,8 @@ function FlatListPlatform() {
  * @returns {JSX.Element} header of the application
  */
 function Discover() {
-    
-    const [search, setSearch] = useState("");
 
-    
+    const [search, setSearch] = useState("");
 
     return (
         <View style={{
