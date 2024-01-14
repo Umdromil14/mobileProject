@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { globalStyles } from "../../styles/globalStyles";
 import { getUser, updateUser } from "../../APIAccess/user";
-import Header from "../header";
+import Header from "../Header";
 import { DARK_GREY, GREEN } from "../../tools/constants";
 
 /**

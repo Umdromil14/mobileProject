@@ -4,10 +4,10 @@ import { GREEN } from "../tools/constants";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { globalStyles } from "../styles/globalStyles";
-import Header from "./header";
+import Header from "./Header";
 import { Dialog } from "@rneui/themed";
 import { getPublications, getVideoGamesWithPlatformsAndGenres } from "../APIAccess/publication";
-import { API_BASE_URL } from "../tools/constants";
+import images from "../images/image";
 
 const IMAGE_MARGIN = 5;
 const IMAGE_WIDTH = Dimensions.get("window").width / 3 - IMAGE_MARGIN * 2;
@@ -58,7 +58,7 @@ function NewGames({ route, navigation }) {
                             navigation.navigate("GamePreview",
                                 { videoGameId: item.id, actualPlatform: platform.code })
                         }>
-                        <Image style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }} source={{uri: `${API_BASE_URL}/videoGame/${item.id}.png`}} />
+                        <Image style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }} source={images[item.id]} />
                     </Pressable>);
                 }}
                 style={globalStyles.container}

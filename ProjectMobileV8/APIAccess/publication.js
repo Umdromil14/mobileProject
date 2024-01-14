@@ -19,6 +19,7 @@ import { addPlatform } from "../store/slice/platform";
  * @param {boolean=} options.getLastGames if `true`, only the last games are returned; default `false`
  * @param {boolean=} options.getVideoGamesInfo if `true`, the video game info is returned; default `false`
  * @param {boolean=} options.alphabetical if `true`, the publications are sorted alphabetically; default `false`
+ * @param {boolean=} options.sortByDate if `true`, the publications are sorted by date (newest first); default `false`
  * @param {number=} options.page the page of the results
  * @param {number=} options.limit the number of results per page
  *
@@ -30,11 +31,13 @@ async function getPublications(options) {
     options.genresIds =
         options.genresIds?.map((genreId) => genreId.toString()).join(",") ||
         undefined;
+
     const Authorization = await getAuthorizationHeader();
     const response = await axios.get(`${API_URL}/publication`, {
         headers: { Authorization: Authorization },
         params: options,
     });
+
     return response.data;
 }
 

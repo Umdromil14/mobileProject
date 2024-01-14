@@ -11,8 +11,7 @@ async function getToken() {
 }
 
 async function getAuthorizationHeader() {
-    const token = `Bearer ${await getToken()}`;
-    return token;
+    return `Bearer ${await getToken()}`;
 }
 
 export { getAuthorizationHeader, getToken };

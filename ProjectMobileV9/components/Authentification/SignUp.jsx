@@ -59,6 +59,7 @@ function SignUp({ navigation }) {
             repeatPassword: undefined,
             firstname: undefined,
             lastname: undefined,
+
         });
         displayError();
     }

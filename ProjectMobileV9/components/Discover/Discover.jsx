@@ -1,189 +1,255 @@
-import { useState } from "react";
-import { Image, View, StyleSheet, Pressable, Dimensions, Text, FlatList } from "react-native";
-import { useSelector, useDispatch } from 'react-redux';
+import { useEffect, useState } from "react";
+import {
+    Image,
+    View,
+    StyleSheet,
+    Pressable,
+    Dimensions,
+    Text,
+    FlatList,
+    ActivityIndicator,
+} from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 import { globalStyles } from "../../styles/globalStyles";
-import { Dialog } from "@rneui/themed";
 import Header from "../Header";
-import { GREEN, TAB_NAVIGATOR_HEIGHT, HEADER_HEIGHT } from "../../tools/constants";
+import {
+    GREEN,
+    TAB_NAVIGATOR_HEIGHT,
+    HEADER_HEIGHT,
+    API_BASE_URL,
+    LOAD_SIZE,
+} from "../../tools/constants";
 import { getPublications, fillingData } from "../../APIAccess/publication";
-import { useNavigation } from '@react-navigation/native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faChevronRight, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { API_BASE_URL } from "../../tools/constants";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import {
+    faChevronRight,
+    faMagnifyingGlass,
+} from "@fortawesome/free-solid-svg-icons";
+import ErrorText from "../Utils/ErrorText";
 
 const MAGNIFYING_GLASS_SIZE = 25;
 const IMAGE_MARGIN = 5;
 const IMAGE_WIDTH = Dimensions.get("window").width / 3 - IMAGE_MARGIN * 2;
 const IMAGE_HEIGHT = IMAGE_WIDTH * 1.36;
 
+const styles = StyleSheet.create({
+    body: {
+        paddingTop: 10,
+        paddingHorizontal: 10,
+        height:
+            Dimensions.get("window").height -
+            TAB_NAVIGATOR_HEIGHT -
+            HEADER_HEIGHT,
+    },
+    insideFlatlist: {
+        marginBottom: 20,
+        marginTop: 10,
+    },
+    outsideFlatlist: {
+        maxHeight: "100%",
+    },
+    magnifyingContainer: {
+        position: "absolute",
+        bottom:
+            Dimensions.get("window").height -
+            TAB_NAVIGATOR_HEIGHT -
+            HEADER_HEIGHT / 2 -
+            MAGNIFYING_GLASS_SIZE / 2,
+        right: 15,
+    },
+    inner: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    titleContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    titleText: {
+        color: "white",
+        fontSize: 18,
+        fontWeight: "bold",
+    },
+});
+
 /**
- * Function creating the different flatlists of the video games needed to show the discover page
+ * Discover page of the application which is the first page after the sign in
  *
- * @param {string=} platform The platform code from which the publications are related, if undefined, the publications should be the user's games
- * @param {Object} publicationsData The publications data of the video games that will be displayed
+ * @param {object} props The props object
+ * @param {object} props.navigation The navigation object
  *
  * @returns {JSX.Element} header of the application
  */
-function FlatListVideoGame({ platform, publicationsData }) {
-
-    const navigation = useNavigation();
-    let actualVideoGameId = 0;
-    let gameData = [];
-
-    if (platform === undefined && publicationsData !== undefined) {
-        gameData = publicationsData.filter((publication) => {
-            if (publication.video_game_id !== actualVideoGameId) {
-                actualVideoGameId = publication.video_game_id;
-                return publication;
-            }
-        }).slice(-5);
-    }
-
-    const selectedPublications = Object.keys(publicationsData).find((element) => {
-        return element === platform;
-    });
-
-    return (
-        <FlatList
-            data={platform !== undefined ? publicationsData[selectedPublications].slice(-5) : gameData}
-            renderItem={({ item }) =>
-                <Pressable
-                    style={{ marginLeft: IMAGE_MARGIN }}
-                    onPress={() =>
-                        navigation.navigate("GamePreview",
-                            { videoGameId: item.video_game_id, actualPlatform: item.platform_code })
-                    }>
-                    <Image style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }} source={{ uri: `${API_BASE_URL}/videoGame/${item.video_game_id}.png` }} />
-                </Pressable>
-            }
-            horizontal={true}
-            style={styles.insideFlatlist}
-            ListEmptyComponent={
-                <Text style={[
-                    globalStyles.greenText,
-                    globalStyles.centered,
-                    {
-                        height: 50,
-                        color: "grey",
-                        fontSize: 15,
-                        fontWeight: "bold"
-                    }]}>
-                    You don't have any game yet!
-                </Text>}
-        />
-    );
-}
-
-/**
- * Function creating the flatlist of platforms and user game that will be displayed on the discover page
- *
- * @returns {JSX.Element} header of the application
- */
-function FlatListPlatform() {
-
-    const navigation = useNavigation();
-    const platforms = useSelector(state => state.platformList.platforms);
-    const newGames = useSelector(state => state.newGames.newGames);
+export default function Discover({ navigation }) {
+    const platforms = useSelector((state) => state.platformList.platforms);
+    const newGames = useSelector((state) => state.newGames.newGames);
     const dispatch = useDispatch();
 
     const [platformsData, setPlatformsData] = useState([]);
     const [publications, setPublications] = useState({});
     const [myGames, setMyGames] = useState([]);
-    const [load, setLoad] = useState({
-        loading: true,
-        errorMessage: "",
-    });
+    const [isLoading, setIsLoading] = useState(true);
 
-    function getPublicationsAndPlatformData() {
-        getPublications({ getOwnGames: true }).then((response) => {
-            setMyGames(response);
-        }).catch((reason) => {
-            if (reason.response?.request?.status !== 404) {
-                console.log(reason);
-            }
-        });
-        fillingData(platforms, newGames, dispatch).then((value) => {
-            setPlatformsData(value.platformsToAdd);
-            setPublications(value.publicationsToAdd);
-        });
-        setLoad({
-            loading: false,
-            errorMessage: ""
-        });
-    }
-    
-    let contentPlatforms;
-    if (load.loading) {
-        contentPlatforms = (<Dialog.Loading loadingProps={{ color: GREEN }} />);
-        getPublicationsAndPlatformData();
-    }
-    else if (load.errorMessage) {
-        contentPlatforms = (<ErrorText errorMessage={load.errorMessage} />);
-    }
-    else if (!load.loading && Object.keys(publications).length > 0 && platformsData.length > 1){
-        contentPlatforms = (
+    useEffect(() => {
+        getPublications({ getOwnGames: true, sortByDate: true, limit: 50 })
+            .then((videoGames) => {
+                videoGames = videoGames.reduce((unique, publication) => {
+                    if (
+                        !unique.some(
+                            (e) => e.video_game_id === publication.video_game_id
+                        )
+                    ) {
+                        unique.push(publication);
+                    }
+                    return unique;
+                }, []);
+                setMyGames(videoGames);
+            })
+            .catch((error) => {
+                if (error.response?.data.code?.includes("JWT")) {
+                    // TODO message
+                    navigation.navigate("SignIn");
+                }
+            })
+            .finally(() => {
+                fillingData(platforms, newGames, dispatch)
+                    .then((value) => {
+                        setPlatformsData(value.platformsToAdd);
+                        setPublications(value.publicationsToAdd);
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
+            });
+    }, []);
+
+    /**
+     * Render a flatlist of video games
+     *
+     * @param {object[]} videoGames The video games to render (key: video_game_id, platform_code)
+     *
+     * @returns {JSX.Element} The flatlist of video games
+     */
+    const renderVideoGamesFlatlist = (videoGames) => {
+        return (
             <FlatList
-                data={platformsData}
-                renderItem={({ item }) => {
-                    return (
-                        <View style={styles.outsideFlatlist}>
-                            <Pressable onPress={() => item.abbreviation
-                                        ? navigation.navigate("Games", {
-                                              defaultPlatform: item.code,
-                                              sortByDate: true,
-                                              getOwnGames: false,
-                                          })
-                                        : navigation.navigate("Home", {
-                                              screen: "Games",
-                                          })
-                            }
-                                style={{ flexDirection: "row" }}
-                            >
-                                <Text style={[globalStyles.whiteText, { fontSize: 17 }]}>{item.abbreviation ? "New games on " + item.abbreviation : "My Games"}</Text>
-                                <FontAwesomeIcon icon={faChevronRight} size={25} style={{ color: "white" }} />
-                            </Pressable>
-                            <FlatListVideoGame platform={item.code} publicationsData={item.code ? publications : myGames} />
-                        </View>);
-                }}
+                data={videoGames}
+                renderItem={({ item }) => (
+                    <Pressable
+                        style={{ marginHorizontal: IMAGE_MARGIN }}
+                        onPress={() =>
+                            navigation.navigate("GamePreview", {
+                                videoGameId: item.video_game_id,
+                                actualPlatform: item.platform_code,
+                            })
+                        }
+                    >
+                        <Image
+                            style={{
+                                height: IMAGE_HEIGHT,
+                                width: IMAGE_WIDTH,
+                            }}
+                            source={{
+                                uri: `${API_BASE_URL}/videoGame/${item.video_game_id}.png`,
+                            }}
+                        />
+                    </Pressable>
+                )}
+                horizontal={true}
+                style={styles.insideFlatlist}
             />
-        )
-    }
+        );
+    };
 
-    return (
-        <>
-            {contentPlatforms}
-        </>
-    );
-}
-
-/**
- * Discover page of the application which is the first page after the sign in
- *
- * @returns {JSX.Element} header of the application
- */
-function Discover() {
-
-    return (
-        <View style={{
-            flexDirection: 'column',
-        }}>
-            <Header />
-            <View
-                style={{ paddingTop: 20, paddingLeft: 20, height: Dimensions.get("window").height - TAB_NAVIGATOR_HEIGHT - HEADER_HEIGHT }}
-            >
-                <FlatListPlatform />
+    /**
+     * Render a flatlist of video games with a title
+     *
+     * @param {object} param0 The item of the flatlist
+     * @param {object} param0.item The item of the flatlist
+     * @param {string} param0.item.code The code of the platform
+     * @param {string} param0.item.abbreviation The abbreviation of the platform
+     *
+     * @returns {JSX.Element} The flatlist of video games with a title
+     */
+    const renderItem = ({ item }) => {
+        return (
+            <View style={styles.outsideFlatlist}>
+                <Pressable
+                    onPress={() =>
+                        item.code
+                            ? navigation.navigate("Games", {
+                                  defaultPlatform: item.code,
+                                  sortByDate: true,
+                                  getOwnGames: false,
+                              })
+                            : navigation.navigate("Home", {
+                                  screen: "Games",
+                              })
+                    }
+                    style={styles.titleContainer}
+                >
+                    <Text
+                        style={[
+                            globalStyles.whiteText,
+                            { fontSize: 18, fontWeight: "bold" },
+                        ]}
+                    >
+                        {item.abbreviation
+                            ? `New ${item.abbreviation} Games`
+                            : "My Games"}
+                    </Text>
+                    <FontAwesomeIcon
+                        icon={faChevronRight}
+                        size={15}
+                        style={{ color: "white" }}
+                    />
+                </Pressable>
+                {renderVideoGamesFlatlist(
+                    item.code ? publications[item.code] : myGames
+                )}
             </View>
-            <View
-                style={{
-                    position: "absolute",
-                    bottom:
-                        Dimensions.get("window").height -
-                        TAB_NAVIGATOR_HEIGHT -
-                        HEADER_HEIGHT / 2 -
-                        MAGNIFYING_GLASS_SIZE / 2,
-                    right: 15,
-                }}
-            >
+        );
+    };
+
+    /**
+     * Render the content of the page; either a loading indicator, an error message or the flatlist of video games
+     *
+     * @returns {JSX.Element} The content of the page
+     */
+    const renderContent = () => {
+        if (isLoading) {
+            return (
+                <View style={styles.inner}>
+                    <ActivityIndicator size={LOAD_SIZE} color={GREEN} />
+                </View>
+            );
+        } else if (
+            myGames.length === 0 &&
+            Object.keys(publications).length === 0
+        ) {
+            return (
+                <ErrorText errorMessage="No video games has recently been added" />
+            );
+        } else {
+            return (
+                <FlatList
+                    data={
+                        myGames.length > 0
+                            ? [{}, ...platformsData]
+                            : platformsData
+                    }
+                    renderItem={renderItem}
+                />
+            );
+        }
+    };
+
+    return (
+        <View style={{ flexDirection: "column" }}>
+            <Header />
+            <View style={styles.body}>{renderContent()}</View>
+            <View style={styles.magnifyingContainer}>
                 <Pressable
                     onPress={() => {
                         navigation.navigate("Games", {
@@ -201,14 +267,3 @@ function Discover() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    insideFlatlist: {
-        marginVertical: 20,
-    },
-    outsideFlatlist: {
-        maxHeight: "100%",
-    },
-});
-
-export default Discover;

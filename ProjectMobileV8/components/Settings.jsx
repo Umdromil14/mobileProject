@@ -1,10 +1,9 @@
-import { Text, View, Pressable, StyleSheet } from "react-native";
-import { globalStyles } from "../../styles/globalStyles";
+import logo from "../images/logo.png";
+import { Text, View, StatusBar, Image, Pressable, StyleSheet } from "react-native";
+import { globalStyles } from "../styles/globalStyles";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faArrowRightFromBracket, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { deleteUser } from "../../APIAccess/user";
-import Header from "../Header";
-import { GREEN } from "../../tools/constants";
+import { deleteUser } from "../APIAccess/user";
 
 /**
  * Settings of the application
@@ -15,13 +14,24 @@ function Settings({ navigation }) {
     return (
         <View
             style={{
-                flexDirection: 'column'
+                flexDirection: 'column',
+                flex: 1
             }}
         >
-            <Header />
-            <View style={{ padding: 10 }}>
+            <View style={{ backgroundColor: '#443D3D', paddingBottom: 30 }}>
+                <StatusBar
+                    backgroundColor={'#443D3D'}
+                    hidden={false}
+                />
+                <Image
+                    style={globalStyles.tinyLogo}
+                    source={logo}
+                />
+            </View>
+            <View style={{ backgroundColor: '#2C2C2C', flex: 1, padding: 10 }}>
+
                 <Pressable onPress={navigation.goBack}>
-                    <FontAwesomeIcon icon={faArrowLeft} size={40} style={{ color: GREEN }} />
+                    <FontAwesomeIcon icon={faArrowLeft} size={40} style={{ color: "#59A52C" }} />
                 </Pressable>
                 <View style={[globalStyles.containerInsideView, styles.containerButton, { flexDirection: "column" }]}>
                     <Pressable style={{
@@ -30,10 +40,9 @@ function Settings({ navigation }) {
                         justifyContent: "space-between",
                         width: 150,
                         alignSelf: "center"
-                    }}
-                        onPress={() => navigation.navigate('SignIn')}>
-                        <FontAwesomeIcon icon={faArrowRightFromBracket} size={30} style={{ color: GREEN }} />
-                        <Text style={{ color: GREEN, fontSize: 20 }}>Disconnect</Text>
+                    }} onPress={() => navigation.navigate('SignIn')}>
+                        <FontAwesomeIcon icon={faArrowRightFromBracket} size={30} style={{ color: "#59A52C" }} />
+                        <Text style={{ color: "#59A52C", fontSize: 20 }}>Disconnect</Text>
                     </Pressable>
                     <Pressable style={{
                         marginBottom: 100,

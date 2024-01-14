@@ -120,7 +120,7 @@ function Settings({ navigation }) {
 
 const styles = StyleSheet.create({
     containerButton: {
-        marginTop: 100,
+        marginTop: 100
     },
     buttonContainer: {
         width: 200,

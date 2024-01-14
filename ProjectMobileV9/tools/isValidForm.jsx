@@ -6,7 +6,7 @@ import {
 
 /**
  * Check if the the value in the label in the form is valid
- *
+ * 
  * @param {Object} form - The form
  * @param {string} form.username - The username
  * @param {string} form.email - The email
