@@ -10,8 +10,5 @@ export default configureStore({
     genreList: genre,
     newGames: newGames,
     token : token,
-    // genreList: genre,
-    // listPlatformsImage: platformImage,
-    // listGenresImage: genreImage
   },
 })

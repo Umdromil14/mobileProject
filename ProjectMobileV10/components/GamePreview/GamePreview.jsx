@@ -1,21 +1,29 @@
-import { Dimensions, View, Text, Image, Pressable, StyleSheet, ScrollView, FlatList, Linking,Alert } from "react-native";
+import { Dimensions, View, Text, Image, Pressable, StyleSheet, ScrollView, FlatList, Linking, Alert } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faCircleCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { Tab, TabView, AirbnbRating, Button, Dialog, CheckBox } from "@rneui/themed";
 import { useState, useEffect, useCallback } from "react";
 import { getPublications } from "../../APIAccess/publication";
-import { getPlatformsByVideoGame } from "../../APIAccess/platform";
 import { getGamesByVideoGame, updateGame, createGame } from "../../APIAccess/game";
 import Header from "../Global/Header";
 import { DARK_GREY, GREEN, API_BASE_URL } from "../../tools/constants";
 import UpdateReview from "./UpdateReviewModal";
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 import ErrorText from "../Utils/ErrorText";
 
 const IMAGE_WIDTH = Dimensions.get("window").width / 3;
 const IMAGE_HEIGHT = IMAGE_WIDTH * 1.36;
 
+/**
+ * This function is used to do the steps following the press on the check box
+ *
+ * @param {Array} gameReviews The different reviews of the game made by the user
+ * @param {object} actualPublication The object containing the publication displayed on the page
+ * @param {object} actualReview The object containing the review of the publication displayed
+ *
+ * @returns {Array} Array containing all the reviews of the user for the video game 
+ */
 function CheckBoxInit(gameReviews, actualPublication, actualReview) {
     let reviewExist = false;
     gameReviews.forEach(review => {
@@ -28,7 +36,14 @@ function CheckBoxInit(gameReviews, actualPublication, actualReview) {
         updateGame(actualPublication.id,
             {
                 is_owned: !actualReview.is_owned
-            },token).catch((reason) => { console.log(reason.request); });
+            },token).catch((error) => {
+                if (error.response?.data?.code.includes("JWT")) {
+                    navigation.navigate("SignIn", { message: "The software doesn't recognize you, please sign in again!" });
+                }
+                else {
+                    return (<ErrorText errorMessage="An error occured, please try later!" />);
+                }
+            });
         newReviews = gameReviews.map(review => {
             if (review.publication_id === actualPublication.id) {
                 review.is_owned = !actualReview.is_owned;
@@ -43,7 +58,14 @@ function CheckBoxInit(gameReviews, actualPublication, actualReview) {
             review_rating: 0,
             review_comment: null,
             review_date: null
-        },token);
+        },token).catch((error) => {
+            if (error.response?.data?.code.includes("JWT")) {
+                navigation.navigate("SignIn", { message: "The software doesn't recognize you, please sign in again!" });
+            }
+            else {
+                return (<ErrorText errorMessage="An error occured, please try again!" />);
+            }
+        });
         actualReview = {
             publication_id: actualPublication.id,
             is_owned: true,
@@ -54,28 +76,28 @@ function CheckBoxInit(gameReviews, actualPublication, actualReview) {
         newReviews = gameReviews;
         newReviews.push(actualReview);
     }
-    console.log("actual review après press:");
-    console.log(actualReview);
     return newReviews;
 }
 
 /**
  * Page with all the data that will be displayed about a game
  *
- * @param {object} params
- * @param {number} params.videoGameId The id of the video game that will be displayed on the screen
- * @param {string=} params.actualPlatform The code of the platform of the publication that the user chosed, if it's not provided, it will get the favorite platform of a user
+ * @param {object} props
+ * @param {object} props.route The route containing the parameters
+ * @param {number} props.route.params.videoGameId The id of the video game that will be displayed on the screen
+ * @param {string=} props.route.params.actualPlatform The code of the platform of the publication that the user chosed, if it's not provided, it will get the favorite platform of a user
  *
- * @returns {JSX.Element} header of the application
+ * @returns {JSX.Element} The game preview page displayed
  */
 function GamePreview({ route, navigation }) {
     const token = useSelector((state) => state.token.token);
-
     const { videoGameId, actualPlatform } = route.params;
+    const platforms = useSelector(state => state.platformList.platforms);
 
     const [gamePreviews, setGamePreviews] = useState(new Map());
     const [gameReviews, setGameReviews] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
+    const [checked, setChecked] = useState(false);
 
     const [load, setLoad] = useState({
         loading: true,
@@ -85,20 +107,25 @@ function GamePreview({ route, navigation }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [publications, platforms] = await Promise.all([
-                    getPublications({ videoGameId: videoGameId, getVideoGamesInfo: true },token),
-                    getPlatformsByVideoGame(videoGameId, token),
-                ]);
+                const publications = await getPublications({ videoGameId: videoGameId, getVideoGamesInfo: true },token);
+                const videoGamePlatforms = platforms.filter((platform) => {
+                    return publications.some((publication) => {
+                        return platform.code === publication.platform_code;
+                    })
+                });
 
                 getGamesByVideoGame(videoGameId,token).then((response) => {
                     setGameReviews(response);
-                }).catch((reason) => {
-                    if (reason.response?.request?.status !== 404) {
-                        console.log(reason);
+                }).catch((error) => {
+                    if (error.response?.data.code?.includes("JWT")) {
+                        navigation.navigate("SignIn", { message: "The software doesn't recognize your account, please sign in again!" });
+                    }
+                    else {
+                        return (<ErrorText errorMessage="An error occured, please try again in a few minutes!" />);
                     }
                 });
                 const previews = new Map();
-                platforms.forEach(platform => {
+                videoGamePlatforms.forEach(platform => {
                     const values = publications.find(element =>
                         element.platform_code === platform.code
                     );
@@ -112,19 +139,29 @@ function GamePreview({ route, navigation }) {
             } catch (error) {
                 setLoad({
                     loading: false,
-                    errorMessage: error.message,
+                    errorMessage: "An error occured, please try again later!",
                 });
             }
         }
         fetchData();
     }, []);
 
+    const keys = Array.from(gamePreviews.keys());
+    const actualPublication = gamePreviews.get(keys.find(platform => platform.code === actualPlatform));
+    const actualReview = gameReviews.find((review) => review.publication_id === actualPublication.id);
+
+    useEffect(() => {
+        if (actualReview && actualReview.is_owned !== checked) {
+            setChecked(actualReview.is_owned);
+        }
+    }, [actualReview]);
+
+    /**
+    * This function create the different parts displayed on screen
+    *
+    * @returns {JSX.Element} Interior of the game preview page
+    */
     const renderPreviews = () => {
-        const keys = Array.from(gamePreviews.keys());
-        const actualPublication = gamePreviews.get(keys.find(platform => platform.code === actualPlatform));
-        let actualReview = gameReviews.find((review) => review.publication_id === actualPublication.id);
-        console.log("actual review avant press:");
-        console.log(actualReview);
         return (
             <>
                 <View style={{ flexDirection: 'row' }}>
@@ -137,18 +174,19 @@ function GamePreview({ route, navigation }) {
                 </View>
                 <View style={globalStyles.containerInsideView}>
                     <View style={{ height: IMAGE_HEIGHT, marginTop: 15 }}>
-                        <Image 
-                            style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }} 
-                            source={{ uri: `${API_BASE_URL}/videoGame/${videoGameId}.png` }} 
+                        <Image
+                            style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }}
+                            source={{ uri: `${API_BASE_URL}/videoGame/${videoGameId}.png` }}
                         />
                         <View style={{ position: "absolute", alignSelf: "center", top: IMAGE_HEIGHT - 40 }}>
                             <CheckBox
-                                checked={actualReview ? actualReview.is_owned : false}
+                                checked={checked}
                                 checkedIcon={<FontAwesomeIcon icon={faCircleCheck} size={40} style={{ color: GREEN }} />}
                                 uncheckedIcon={<FontAwesomeIcon icon={faCircleXmark} size={40} style={{ color: "red" }} />}
                                 onPress={() => {
-                                    CheckBoxInit(gameReviews, actualPublication, actualReview);
+                                    const newReviews = CheckBoxInit(gameReviews, actualPublication, actualReview);
                                     setGameReviews(newReviews);
+                                    setChecked(!checked);
                                 }}
                                 containerStyle={{ backgroundColor: "transparent" }}
                             />
@@ -247,10 +285,10 @@ function GamePreview({ route, navigation }) {
                             <Text
                                 style={[styles.textStyle, (actualReview ? globalStyles.whiteText : { color: "grey" }), { fontSize: 15 }]}
                             >
-                                {actualReview ? actualReview.review_comment : "No comment for the moment"}
+                                {actualReview && actualReview.review_comment ? actualReview.review_comment : "No comment for the moment"}
                             </Text>
                             <Button
-                                title="Modify"
+                                title={"Modify"}
                                 titleStyle={{ fontWeight: "700" }}
                                 buttonStyle={{
                                     backgroundColor: GREEN,
@@ -258,8 +296,15 @@ function GamePreview({ route, navigation }) {
                                     borderRadius: 20,
                                 }}
                                 containerStyle={globalStyles.modifyButtonContainer}
-                                onPress={() => setModalVisible(true)}
+                                onPress={() => {
+                                    setModalVisible(true);
+                                }}
                                 disabled={!actualReview}
+                                disabledStyle={{
+                                    backgroundColor: "#59A52C99",
+                                    borderWidth: 0,
+                                    borderRadius: 20,
+                                }}
                             />
                         </ScrollView>
                     </TabView.Item>
@@ -267,7 +312,6 @@ function GamePreview({ route, navigation }) {
                 <UpdateReview
                     isVisible={modalVisible}
                     onClose={({ comment = undefined, rating = undefined }) => {
-                        Alert.alert('Modal has been closed.');
                         setModalVisible(false);
                         if (comment !== undefined || rating !== undefined) {
                             const newReviews = gameReviews.map(review => {
@@ -290,13 +334,21 @@ function GamePreview({ route, navigation }) {
 
     const [index, setIndex] = useState(0);
 
+    /**
+    * This function check if the URL entered is a supported URL and open it if supported.
+    * 
+    * @param {object} params
+    * @param {string} params.url The URL to the official webstore
+    *
+    * @returns {JSX.Element} The button to click on to be directed to the webstore
+    */
     const OpenURLButton = ({ url }) => {
         const handlePress = useCallback(async () => {
             const supported = await Linking.canOpenURL(url);
             if (supported) {
                 await Linking.openURL(url);
             } else {
-                Alert.alert(`Invalid url`);
+                Alert.alert(`This is an invalid URL. Please forgive us for this problem!`);
             }
         }, [url]);
 

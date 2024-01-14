@@ -7,7 +7,6 @@ export const genreSlice = createSlice({
         nextIdGenre: 0
     },
     reducers: {
-        // TODO remove ?
         addGenre: (state, action) => {
             state.genres.push({
                 ...action.payload,

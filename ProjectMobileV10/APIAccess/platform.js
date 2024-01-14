@@ -18,15 +18,4 @@ async function getPlatforms(code) {
     return response.data;
 }
 
-async function getPlatformsByVideoGame(videoGameId,token) {
-    const publications = await getPublications({ videoGameId: videoGameId },token);
-    let platforms = [];
-    for (const publication of publications) {
-        const platform = publication.platform_code;
-        const response = await getPlatforms(platform);
-        platforms.push(response[0]);
-    }
-    return platforms;
-}
-
-export { getPlatforms, getPlatformsByVideoGame };
+export { getPlatforms };

@@ -114,7 +114,6 @@ export default function Games({ route, navigation }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        // TODO use store
         Promise.all([getPlatforms(), getGenres(undefined, true)])
             .then((response) => {
                 setPlatforms(response[0]);

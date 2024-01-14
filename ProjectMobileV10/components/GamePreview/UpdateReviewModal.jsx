@@ -1,21 +1,38 @@
-import {
-    Modal,
-    View,
-    Text,
-    StyleSheet,
-    TextInput,
-    KeyboardAvoidingView,
-    Pressable,
-} from "react-native";
+import { Modal, View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Pressable } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
-import { Button } from "@rneui/themed";
-import { AirbnbRating } from "@rneui/themed";
+import { AirbnbRating, Button } from "@rneui/themed";
 import { useState } from "react";
 import { updateGame } from "../../APIAccess/game";
-import { DARK_GREY, GREEN } from "../../tools/constants";
+import { DARK_GREY,GREEN } from "../../tools/constants";
 import { useSelector } from "react-redux";
 
-function UpdateReview({ isVisible, onClose, publicationId, comment, rating }) {
+const styles = StyleSheet.create({
+    titles: [
+        globalStyles.whiteText,
+        globalStyles.textForm
+    ]
+});
+
+
+/**
+ * Page with all the data that will be displayed about a game
+ *
+ * @param {object} props The props object
+ * @param {boolean} props.isVisible The boolean to know if the modal is visible
+ * @param {function} props.onClose The function giving the instructions to do when the modal close
+ * @param {number} props.publicationId The publication id of the review
+ * @param {string} props.comment The comment of the review on the publication
+ * @param {number} props.rating The rating of the publication by the user
+ *
+ * @returns {JSX.Element} The modal displayed to update the review
+ */
+function UpdateReview({
+    isVisible,
+    onClose,
+    publicationId,
+    comment,
+    rating
+}) {
     const token = useSelector((state) => state.token.token);
     const [newComment, setNewComment] = useState(comment);
     const [newRating, setNewRating] = useState(rating);
@@ -31,19 +48,11 @@ function UpdateReview({ isVisible, onClose, publicationId, comment, rating }) {
                 onPress={onClose}
                 style={{
                     backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    flexGrow: 1,
+                    flexGrow: 1
                 }}
             />
-            <KeyboardAvoidingView
-                behavior={"padding"}
-                style={[{ width: "100%", backgroundColor: DARK_GREY }]}
-            >
-                <View
-                    style={[
-                        { maxHeight: "100%", width: "80%" },
-                        globalStyles.centered,
-                    ]}
-                >
+            <KeyboardAvoidingView behavior={"padding"} style={[{ width: "100%", backgroundColor: DARK_GREY }]}>
+                <View style={[{ maxHeight: "100%", width: "80%" }, globalStyles.centered]}>
                     <Text style={styles.titles}>Rating</Text>
                     <AirbnbRating
                         showRating={false}
@@ -125,9 +134,5 @@ function UpdateReview({ isVisible, onClose, publicationId, comment, rating }) {
         </Modal>
     );
 }
-
-const styles = StyleSheet.create({
-    titles: [globalStyles.whiteText, globalStyles.textForm],
-});
 
 export default UpdateReview;

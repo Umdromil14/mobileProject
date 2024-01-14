@@ -7,7 +7,6 @@ export const platformSlice = createSlice({
         nextIdPlatform: 0
     },
     reducers: {
-        // TODO remove ?
         addPlatform: (state, action) => {
             state.platforms.push({
                 ...action.payload,
