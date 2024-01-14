@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback } from "react";
 import { getPublications } from "../../APIAccess/publication";
 import { getPlatformsByVideoGame } from "../../APIAccess/platform";
 import { getGamesByVideoGame, updateGame, createGame } from "../../APIAccess/game";
-import Header from "../header";
+import Header from "../Header";
 import { DARK_GREY, GREEN, API_BASE_URL } from "../../tools/constants";
 import UpdateReview from "./UpdateReviewModal";
 
@@ -338,31 +338,6 @@ function GamePreview({ route, navigation }) {
                 {content}
             </View>
         </>
-    );
-}
-
-function ErrorText({ errorMessage }) {
-    return (
-        <View style={styles.inner}>
-            <Text
-                style={{
-                    color: "#ffffff",
-                    fontSize: 16,
-                    fontWeight: "bold",
-                }}
-            >
-                Whoops...
-            </Text>
-            <Text
-                style={{
-                    color: "grey",
-                    fontSize: 15,
-                    fontWeight: "bold",
-                }}
-            >
-                {errorMessage}
-            </Text>
-        </View>
     );
 }
 

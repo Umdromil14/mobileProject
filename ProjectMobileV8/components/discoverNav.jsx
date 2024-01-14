@@ -2,7 +2,8 @@ import * as React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Discover from './discover';
-import Games from '../GameSearch/Games';
+import NewGames from './newGames';
+import GamePreview from './gamePreview';
 
 const Stack = createNativeStackNavigator();
 
@@ -15,7 +16,8 @@ export default function DiscoverNav() {
     return (
         <Stack.Navigator initialRouteName="Discover" screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Discover" component={Discover} />
-            <Stack.Screen name="Games" component={Games} />
+            <Stack.Screen name="NewGames" component={NewGames} />
+            <Stack.Screen name="GamePreview" component={GamePreview} />
         </Stack.Navigator>
     );
 }

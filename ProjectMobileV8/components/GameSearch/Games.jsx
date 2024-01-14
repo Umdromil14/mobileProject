@@ -7,12 +7,13 @@ import {
     Dimensions,
     ActivityIndicator,
     Pressable,
+    Text,
 } from "react-native";
-import { Button } from "@rneui/themed";
+import { Button, normalize } from "@rneui/themed";
 import { getPublications } from "../../APIAccess/publication";
 import { getPlatforms } from "../../APIAccess/platform";
 import { getGenres } from "../../APIAccess/genre";
-import Header from "../header";
+import Header from "../Header";
 import {
     DARK_GREY,
     HEADER_HEIGHT,
@@ -23,10 +24,10 @@ import {
 import FilterModal from "./FilterModal";
 import ErrorText from "../Utils/ErrorText";
 import { API_BASE_URL } from "../../tools/constants";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-const DEFAULT_PLATFORM = "PC";
 const LIMIT = 48;
-
 const IMAGE_MARGIN = 5;
 const IMAGE_WIDTH = Dimensions.get("window").width / 3 - IMAGE_MARGIN * 2;
 const IMAGE_HEIGHT = IMAGE_WIDTH * 1.36;
@@ -53,14 +54,24 @@ const styles = StyleSheet.create({
     },
     filterButtonContainer: {
         position: "absolute",
-        bottom: 0,
+        bottom: 16,
         right: Dimensions.get("window").width / 2 - FILTER_BUTTON_WIDTH / 2,
-        paddingBottom: 16,
     },
     filterButton: {
         backgroundColor: GREEN,
         borderRadius: 20,
         width: FILTER_BUTTON_WIDTH,
+    },
+    titleContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 10,
+        paddingBottom: 10,
+    },
+    title: {
+        color: "white",
+        fontSize: normalize(18),
+        fontWeight: "bold",
     },
 });
 
@@ -68,18 +79,28 @@ const styles = StyleSheet.create({
  * Displays the video games
  *
  * @param {object} props The props object
+ * @param {object} props.route The route object
  * @param {object} props.navigation The navigation object
+ * @param {string=} props.route.defaultPlatform The default platform to filter the games; defaults to `PC`
+ * @param {boolean=} props.route.getOwnGames `true` if the games to display are the user's games, `false` otherwise; defaults to `true`
+ * @param {boolean=} props.route.sortByDate `true` if the games to display are the most recent ones, `false` otherwise; defaults to `false`
  *
  * @returns {JSX.Element} The video games
  */
-export default function Games({ navigation }) {
+export default function Games({ route, navigation }) {
+    const {
+        defaultPlatform = "PC",
+        getOwnGames = true,
+        sortByDate = false,
+    } = route.params;
+
     const [search, setSearch] = useState("");
     const [platforms, setPlatforms] = useState([]);
     const [genres, setGenres] = useState([]);
     const [videoGames, setVideoGames] = useState([]);
 
     const [selectedFilter, setSelectedFilter] = useState({
-        platform: DEFAULT_PLATFORM,
+        platform: defaultPlatform,
         genres: [],
     });
 
@@ -132,7 +153,8 @@ export default function Games({ navigation }) {
             platformCode: selectedFilter.platform,
             videoGameName: search,
             genresIds: selectedFilter.genres,
-            getOwnGames: true,
+            getOwnGames,
+            sortByDate,
             alphabetical: true,
             page: page.current,
             limit: LIMIT,
@@ -245,9 +267,7 @@ export default function Games({ navigation }) {
                     <ErrorText errorMessage="No video games match your search criteria" />
                 );
             }
-            return (
-                <ErrorText errorMessage="It seems that you have no video games" />
-            );
+            return <ErrorText errorMessage="Nothing to see here" />;
         }
 
         return (
@@ -263,22 +283,22 @@ export default function Games({ navigation }) {
 
     /**
      * Resets the selected filter to the default platform and an empty array of genres
-     * 
+     *
      * @returns {void}
      */
     const modalOnReset = () => {
         setSelectedFilter({
-            platform: DEFAULT_PLATFORM,
+            platform: defaultPlatform,
             genres: [],
         });
     };
 
     /**
      * Sets the selected filter to the given platform and genres
-     * 
+     *
      * @param {int[]} genres The genres ids
      * @param {string} platform The platform code
-     * 
+     *
      * @returns {void}
      */
     const modalOnApply = (genres, platform) => {
@@ -288,11 +308,48 @@ export default function Games({ navigation }) {
         });
     };
 
+    /**
+     * Renders the title of the page plus a back button if getOwnGames is `false`
+     *
+     * @returns {JSX.Element=} The title and the back button if getOwnGames is `false`
+     */
+    const renderTitle = () => {
+        const platform = platforms.find(
+            (platform) => platform.code === selectedFilter.platform
+        );
+
+        let title = "";
+        if (sortByDate) {
+            title = "Recent ";
+        } else if (getOwnGames) {
+            title = "My ";
+        } else {
+            title = "";
+        }
+        title += platform ? `${platform.abbreviation} Games` : "Games";
+
+        return (
+            <View style={styles.titleContainer}>
+                {!getOwnGames && (
+                    <Pressable onPress={navigation.goBack}>
+                        <FontAwesomeIcon
+                            icon={faArrowLeft}
+                            size={30}
+                            style={{ color: GREEN, marginRight: 10 }}
+                        />
+                    </Pressable>
+                )}
+                <Text style={styles.title}>{title}</Text>
+            </View>
+        );
+    };
+
     return (
         <View style={styles.container}>
             <Header onSearch={setSearch} />
             <View style={styles.body}>
                 <View style={{ width: "100%", paddingTop: 10 }}>
+                    {renderTitle()}
                     <FilterModal
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}

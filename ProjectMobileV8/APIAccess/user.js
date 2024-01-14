@@ -56,5 +56,4 @@ async function deleteUser() {
     } catch (error) {}
 }
 
-
 export { postUser, connection , getUser, updateUser, deleteUser };
