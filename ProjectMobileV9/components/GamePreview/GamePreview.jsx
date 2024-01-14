@@ -2,7 +2,6 @@ import { Dimensions, View, Text, Image, Pressable, StyleSheet, ScrollView, FlatL
 import { globalStyles } from "../../styles/globalStyles";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeft, faCircleCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
-import { ValidateButton } from "../../tools/AllForForm";
 import { Tab, TabView, AirbnbRating, Button, Dialog, CheckBox } from "@rneui/themed";
 import { useState, useEffect, useCallback } from "react";
 import { getPublications } from "../../APIAccess/publication";
@@ -247,8 +246,14 @@ function GamePreview({ route, navigation }) {
                             >
                                 {actualReview ? actualReview.review_comment : "No comment for the moment"}
                             </Text>
-                            <ValidateButton
-                                title={"Modify"}
+                            <Button
+                                title="Modify"
+                                titleStyle={{ fontWeight: "700" }}
+                                buttonStyle={{
+                                    backgroundColor: GREEN,
+                                    borderWidth: 0,
+                                    borderRadius: 20,
+                                }}
                                 containerStyle={globalStyles.modifyButtonContainer}
                                 onPress={() => setModalVisible(true)}
                                 disabled={!actualReview}

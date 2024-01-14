@@ -1,4 +1,4 @@
-const IP = "192.168.129.8";
+const IP = "192.168.1.61";
 const PORT = "3001";
 const API_VERSION = "v2";
 const API_BASE_URL = `http://${IP}:${PORT}`;
@@ -19,5 +19,5 @@ export {
     GREEN,
     LOAD_SIZE,
     API_BASE_URL,
-    API_URL,
+    API_URL
 };

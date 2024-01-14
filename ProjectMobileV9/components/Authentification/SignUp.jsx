@@ -31,23 +31,22 @@ import { isValidForm } from "../../tools/isValidForm";
  */
 function SignUp({ navigation }) {
     const [form, setForm] = useState({
-        username: null,
-        email: null,
-        password: null,
-        repeatPassword: null,
-        firstname: null,
-        lastname: null,
-        errorFirstname: "",
-        errorLastname: "",
-        errorUsername: "",
-        errorMail: "",
-        errorPassword: "",
-        viewStyle: styles.form,
+        username: undefined,
+        email: undefined,
+        password: undefined,
+        repeatPassword: undefined,
+        firstname: undefined,
+        lastname: undefined,
+        errorFirstname: undefined,
+        errorLastname: undefined,
+        errorUsername: undefined,
+        errorMail: undefined,
+        errorPassword: undefined,
     });
     const [showPassword, setShowPassword] = useState(false);
 
     /**
-     * Clean the form
+     * Clean the form and the errors
      *
      * @returns {void}
      */
@@ -60,24 +59,36 @@ function SignUp({ navigation }) {
             repeatPassword: undefined,
             firstname: undefined,
             lastname: undefined,
-            viewStyle: styles.form,
+
         });
-        cleanError();
+        displayError();
     }
 
     /**
-     * Clean the error message
+     * Display the errors or clean them if there is no argument
+     *
+     * @param {string} errorUsername - The error of the username
+     * @param {string} errorMail - The error of the email
+     * @param {string} errorFirstname - The error of the firstname
+     * @param {string} errorLastname - The error of the lastname
+     * @param {string} errorPassword - The error of the password
      *
      * @returns {void}
      */
-    function cleanError() {
+    function displayError(
+        errorUsername,
+        errorMail,
+        errorFirstname,
+        errorLastname,
+        errorPassword
+    ) {
         setForm({
             ...form,
-            errorFirstname: "",
-            errorLastname: "",
-            errorUsername: "",
-            errorMail: "",
-            errorPassword: "",
+            errorUsername: errorUsername,
+            errorMail: errorMail,
+            errorFirstname: errorFirstname,
+            errorLastname: errorLastname,
+            errorPassword: errorPassword,
         });
     }
 
@@ -87,7 +98,7 @@ function SignUp({ navigation }) {
      * @returns {void}
      */
     function register() {
-        if (isValidForm(form, setForm,styles.form.height)) {
+        if (isValidForm(form, setForm)) {
             postUser(form)
                 .then(() => {
                     connection({
@@ -99,27 +110,16 @@ function SignUp({ navigation }) {
                     });
                 })
                 .catch((err) => {
-                    console.log(err.response?.data?.message);
                     if (
                         err.response?.data?.message.includes("username") ||
                         err.response?.data?.message.includes("email")
                     ) {
-                        setForm({
-                            ...form,
-                            errorUsername:
-                                "This username or email is already taken",
-                            errorMail:
-                                "This username or email is already taken",
-                            errorFirstname: "",
-                            errorLastname: "",
-                            errorPassword: "",
-                        });
+                        displayError(
+                            "Username already taken",
+                            "Email already taken",
+                        );
                     } else {
-                        setForm({
-                            ...form,
-                            errorPassword:
-                                "An error occured, please try again later...",
-                        });
+                        displayError(undefined,undefined,undefined,undefined, "An error occured");
                     }
                 });
         }
@@ -130,15 +130,15 @@ function SignUp({ navigation }) {
      *
      * @returns {void}
      */
-    const toggleShowPassword = () => {
+    function toggleShowPassword() {
         setShowPassword(!showPassword);
-    };
+    }
 
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
             <SafeAreaView style={globalStyles.background}>
                 <Image style={styles.tinyLogo} source={logo} />
-                <View style={form.viewStyle}>
+                <View style={styles.form}>
                     <Text style={globalStyles.textForm}>First name</Text>
                     <Input
                         inputStyle={globalStyles.inputLabel}
@@ -256,7 +256,9 @@ function SignUp({ navigation }) {
                         }
                         secureTextEntry={!showPassword}
                     />
-                    <Text style={{ color: "#cc0000" }}>* Required fields</Text>
+                    <Text style={{ color: "#cc0000", paddingLeft: 10 }}>
+                        * Required fields
+                    </Text>
                 </View>
                 <Button
                     title="Register"
@@ -307,7 +309,6 @@ const styles = StyleSheet.create({
     form: {
         backgroundColor: "#59A52C",
         borderRadius: 20,
-        height: 670,
         width: 300,
     },
     input: {

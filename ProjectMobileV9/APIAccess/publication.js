@@ -41,6 +41,7 @@ async function getPublications(options) {
     return response.data;
 }
 
+
 // TODO promise return
 // TODO remove
 /**

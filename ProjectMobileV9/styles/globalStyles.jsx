@@ -60,7 +60,6 @@ export const globalStyles = StyleSheet.create({
         color : '#cc0000',
         fontSize : 12,
         fontWeight : 'bold',
-
     },
     greenText: {
         color : "#59A52C"

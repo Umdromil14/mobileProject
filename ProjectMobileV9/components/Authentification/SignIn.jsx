@@ -16,12 +16,14 @@ import { isValidEmail, isValidUsername } from "../../tools/utils";
 /**
  * Sign in page
  *
- * @param {object} props
- * @param {any} props.navigation
+ * @param {object} props 
+ * @param {any} props.navigation navigation object
+ * @param {object} props.route route params
+ * @param {boolean} props.route.params.disconnect if the user has been disconnected
  *
  * @returns {JSX.Element}
  */
-function SignIn({ navigation }) {
+function SignIn({ route, navigation }) {
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -33,9 +35,9 @@ function SignIn({ navigation }) {
      *
      * @returns {void}
      */
-    const toggleShowPassword = () => {
+    function toggleShowPassword() {
         setShowPassword(!showPassword);
-    };
+    }
 
     /**
      * Clean the error message
@@ -53,8 +55,8 @@ function SignIn({ navigation }) {
      * @returns {void}
      */
     function cleanForm() {
-        setLogin("");
-        setPassword("");
+        setLogin(undefined);
+        setPassword(undefined);
         cleanError();
     }
 
@@ -64,7 +66,6 @@ function SignIn({ navigation }) {
      * @returns {void}
      */
     function signIn() {
-        cleanError();
         if (login && (isValidUsername(login) || isValidEmail(login))) {
             connection({ login, password })
                 .then(() => {
@@ -84,6 +85,11 @@ function SignIn({ navigation }) {
     return (
         <View style={globalStyles.background}>
             <Image style={styles.tinyLogo} source={logo} />
+            {route.params?.disconnect ? (
+                <Text style={[globalStyles.error, { fontSize: 15 }]}>
+                    You have been disconnected
+                </Text>
+            ) : null}
             <View style={styles.form}>
                 <Text style={globalStyles.textForm}>Identifiant</Text>
                 <Input
@@ -131,7 +137,10 @@ function SignIn({ navigation }) {
                     marginVertical: 10,
                     paddingTop: 100,
                 }}
-                onPress={signIn}
+                onPress={() => {
+                    cleanError();
+                    signIn();
+                }}
             />
             <Button
                 title="Create a account"
@@ -166,7 +175,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#59A52C",
         borderRadius: 20,
         padding: 10,
-        height: 231,
         width: 300,
     },
 });
