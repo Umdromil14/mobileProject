@@ -1,5 +1,5 @@
 import {
-    Dimensions,
+    Dimensions, 
     View,
     Text,
     Image,
@@ -34,7 +34,6 @@ import {
 } from "../../APIAccess/game";
 import Header from "../Global/Header";
 import {
-    DARK_GREY,
     GREEN,
     API_BASE_URL,
     ERROR_JWT_MESSAGE,
@@ -42,7 +41,6 @@ import {
 import UpdateReview from "./UpdateReviewModal";
 import { useSelector } from "react-redux";
 import ErrorText from "../Utils/ErrorText";
-
 const styles = StyleSheet.create({
     name: {
         fontSize: 20,
@@ -78,7 +76,6 @@ const styles = StyleSheet.create({
         { textAlign: "justify" },
     ],
 });
-
 const IMAGE_WIDTH = Dimensions.get("window").width / 3;
 const IMAGE_HEIGHT = IMAGE_WIDTH * 1.36;
 
@@ -90,7 +87,7 @@ const IMAGE_HEIGHT = IMAGE_WIDTH * 1.36;
  * @param {object} actualReview The object containing the review of the publication displayed
  * @param {string} token The token of the user
  *
- * @returns {Array} Array containing all the reviews of the user for the video game
+ * @returns {object[]} Array containing all the reviews of the user for the video game
  */
 function CheckBoxInit(gameReviews, actualPublication, actualReview, token) {
     let reviewExist = false;
@@ -613,8 +610,7 @@ function GamePreview({ route, navigation }) {
             <View
                 style={{
                     padding: 10,
-                    backgroundColor: DARK_GREY,
-                    flexGrow: 1,
+                    flexGrow: 1
                 }}
             >
                 {content}

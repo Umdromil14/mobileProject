@@ -6,7 +6,7 @@ import {
     ActivityIndicator,
     Image,
 } from "react-native";
-import { DARK_GREY, LOAD_SIZE, GREEN,ERROR_JWT_MESSAGE } from "../../tools/constants";
+import { LOAD_SIZE, GREEN, ERROR_JWT_MESSAGE } from "../../tools/constants";
 import { getPlatforms } from "../../APIAccess/platform";
 import { getGenres } from "../../APIAccess/genre";
 import { getPublications } from "../../APIAccess/publication";
@@ -21,7 +21,6 @@ const LOGO_SIZE = Dimensions.get("window").width * 0.5;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: DARK_GREY,
         alignItems: "center",
         justifyContent: "center",
     },
@@ -71,7 +70,7 @@ export default function LoadingPage({ navigation }) {
                 navigation.navigate("Home");
             })
             .catch((error) => {
-                console.log(error);
+                navigation.navigate("SignIn",message = "App is not available for the moment");
             });
     }, []);
 

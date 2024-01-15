@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
  */
 function Account({ navigation }) {
     const token = useSelector((state) => state.token.token);
-    const [userForm, setUserForm] = useState({
+    const [form, setForm] = useState({
         username: undefined,
         firstname: undefined,
         lastname: undefined,

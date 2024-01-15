@@ -34,7 +34,7 @@ const PASSWORD_ERRORS = {
         "• Should be 8-20 characters\n• Should have a lower case letter\n• Should have a upper case letter\n• Should have a number",
     different: "Password and repeat password are not the same",
 };
-const UNKNOW_ERROR = "an error occured";
+const UNKNOW_ERROR = "An error occured";
 
 export {
     HEADER_HEIGHT,

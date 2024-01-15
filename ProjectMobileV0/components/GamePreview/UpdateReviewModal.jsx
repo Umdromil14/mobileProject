@@ -5,6 +5,7 @@ import { useState } from "react";
 import { updateGame } from "../../APIAccess/game";
 import { DARK_GREY,GREEN } from "../../tools/constants";
 import { useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 
 const styles = StyleSheet.create({
     titles: [
@@ -12,7 +13,6 @@ const styles = StyleSheet.create({
         globalStyles.textForm
     ]
 });
-
 
 /**
  * Page with all the data that will be displayed about a game
@@ -33,6 +33,7 @@ function UpdateReview({
     comment,
     rating
 }) {
+    const navigation = useNavigation();
     const token = useSelector((state) => state.token.token);
     const [newComment, setNewComment] = useState(comment);
     const [newRating, setNewRating] = useState(rating);
@@ -68,7 +69,7 @@ function UpdateReview({
                         multiline={true}
                         onChangeText={(text) => setNewComment(text)}
                         placeholder="Your comment"
-                        placeholderTextColor={globalStyles.whiteText}
+                        placeholderTextColor="white"
                     />
                     <View
                         style={{
@@ -118,7 +119,11 @@ function UpdateReview({
                                             review_rating: newRating,
                                         },
                                         token
-                                    );
+                                    ).catch((error) => {
+                                        if(error.response?.data?.code.includes("JWT")){
+                                            navigation.navigate("SignIn", {message: "Cheh"});
+                                        }
+                                    });
                                     onClose({
                                         comment: newComment,
                                         rating: newRating,

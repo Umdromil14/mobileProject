@@ -3,6 +3,7 @@ import {
     isValidPassword,
     isValidLastNameOrFirstName,
 } from "./utils";
+
 import {
     USERNAME_ERRORS,
     FIRSTNAME_LASTNAME_ERROR,
@@ -26,8 +27,9 @@ import {
  * @param {Object} form.errorUsername - The error of the username
  * @param {Object} form.errorMail - The error of the email
  * @param {Object} form.errorPassword - The error of the password
- * @param {Function} setForm - The function to set the form
+ * @param {Function} setForm - The function to set the form 
  * @param {Boolean} modifyAccount - If the form is for modify account, default is `false`
+ * 
  * @returns {Boolean} - `true` if the form is valid, `false` otherwise
  */
 function isValidForm(form, setForm, modifyAccount = false) {

@@ -15,7 +15,6 @@ import { getPlatforms } from "../../APIAccess/platform";
 import { getGenres } from "../../APIAccess/genre";
 import Header from "../Global/Header";
 import {
-    DARK_GREY,
     HEADER_HEIGHT,
     TAB_NAVIGATOR_HEIGHT,
     GREEN,
@@ -37,14 +36,12 @@ const FILTER_BUTTON_WIDTH = 150;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: DARK_GREY,
     },
     body: {
         height:
             Dimensions.get("window").height -
             HEADER_HEIGHT -
             TAB_NAVIGATOR_HEIGHT,
-        backgroundColor: DARK_GREY,
         flexDirection: "row",
         flexWrap: "wrap",
     },

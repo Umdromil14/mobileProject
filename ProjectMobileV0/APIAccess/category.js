@@ -7,7 +7,7 @@ import { API_URL } from "../tools/constants";
  * @param {number=} genreId the id of the genre
  * @param {number=} videoGameId the id of the video game
  *
- * @returns {Promise<Array>} Array of categories
+ * @returns {Promise<Object[]>} A promise containing an array of categories
  *
  * @throws {Error} if the request failed
  */
