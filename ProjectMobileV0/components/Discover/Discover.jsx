@@ -10,7 +10,7 @@ import {
     FlatList,
     ActivityIndicator,
 } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { globalStyles } from "../../styles/globalStyles";
 import Header from "../Global/Header";
 import {
@@ -19,6 +19,7 @@ import {
     HEADER_HEIGHT,
     API_BASE_URL,
     LOAD_SIZE,
+    ERROR_JWT_MESSAGE
 } from "../../tools/constants";
 import { getPublications } from "../../APIAccess/publication";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -111,11 +112,10 @@ export default function Discover({ navigation }) {
                 setMyGames(videoGames);
             })
             .catch((error) => {
-                if (error.response?.data.code?.includes("JWT")) {
-                    // TODO message
-                    navigation.navigate("SignIn");
-                }
                 setMyGames([]);
+                if (error.response?.data?.code?.includes("JWT")) {
+                    navigation.navigate("SignIn",message = ERROR_JWT_MESSAGE);
+                }
             });
     }, []);
 

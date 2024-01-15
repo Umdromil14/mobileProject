@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { GREEN } from "../tools/constants";
 
 export const globalStyles = StyleSheet.create({
 
@@ -44,7 +45,7 @@ export const globalStyles = StyleSheet.create({
         color: '#fff',
     },
     button : {
-        backgroundColor: '#59A52C',
+        backgroundColor: GREEN,
         borderWidth: 0,
         borderRadius: 20,
     },

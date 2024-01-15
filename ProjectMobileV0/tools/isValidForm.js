@@ -4,9 +4,17 @@ import {
     isValidLastNameOrFirstName,
 } from "./utils";
 
+import {
+    USERNAME_ERRORS,
+    FIRSTNAME_LASTNAME_ERROR,
+    PASSWORD_ERRORS,
+    EMAIL_ERRORS,
+    LASTNAME_ERROR,
+} from "./constants";
+
 /**
  * Check if the the value in the label in the form is valid
- * 
+ *
  * @param {Object} form - The form
  * @param {string} form.username - The username
  * @param {string} form.email - The email
@@ -19,8 +27,10 @@ import {
  * @param {Object} form.errorUsername - The error of the username
  * @param {Object} form.errorMail - The error of the email
  * @param {Object} form.errorPassword - The error of the password
- * @param {Function} setForm - The function to set the form
- * @returns {Promise<Boolean>} - `true` if the form is valid, `false` otherwise
+ * @param {Function} setForm - The function to set the form 
+ * @param {Boolean} modifyAccount - If the form is for modify account, default is `false`
+ * 
+ * @returns {Boolean} - `true` if the form is valid, `false` otherwise
  */
 function isValidForm(form, setForm, modifyAccount = false) {
     let isValid = true;
@@ -35,44 +45,40 @@ function isValidForm(form, setForm, modifyAccount = false) {
         form;
 
     if (firstname && !isValidLastNameOrFirstName(firstname)) {
-        error.errorFirstname =
-            "First name must start with a capital letter and contain only letters";
+        error.errorFirstname = FIRSTNAME_LASTNAME_ERROR;
         isValid = false;
     }
 
     if (lastname && !isValidLastNameOrFirstName(lastname)) {
-        error.errorLastname =
-            "Last name must start with a capital letter and contain only letters";
+        error.errorLastname = FIRSTNAME_LASTNAME_ERROR;
         isValid = false;
     }
 
     if (!username) {
-        error.errorUsername = "Username is missing";
+        error.errorUsername = USERNAME_ERRORS.missing;
         isValid = false;
     } else if (username.length < 3 || username.length > 20) {
-        error.errorUsername = "Username must be between 3 and 20 characters";
+        error.errorUsername = USERNAME_ERRORS.length;
         isValid = false;
     }
 
     if (!email) {
-        error.errorMail = "Email is missing";
+        error.errorMail = EMAIL_ERRORS.missing;
         isValid = false;
     } else if (!isValidEmail(email)) {
-        error.errorMail = "Invalid email";
+        error.errorMail = EMAIL_ERRORS.invalid;
         isValid = false;
     }
 
     if (!modifyAccount) {
         if (!password) {
-            error.errorPassword = "Password is missing";
+            error.errorPassword = PASSWORD_ERRORS.missing;
             isValid = false;
         } else if (!isValidPassword(password)) {
-            error.errorPassword =
-                "• Should be 8-20 characters\n• Should have a lower case letter\n• Should have a upper case letter\n• Should have a number";
+            error.errorPassword = PASSWORD_ERRORS.invalid;
             isValid = false;
         } else if (password !== repeatPassword) {
-            error.errorPassword =
-                "Password and repeat password are not the same";
+            error.errorPassword = PASSWORD_ERRORS.different;
             isValid = false;
         }
     }

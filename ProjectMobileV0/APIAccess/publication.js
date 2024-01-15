@@ -1,8 +1,5 @@
 import axios from "axios";
 import { API_URL } from "../tools/constants";
-import { getCategory } from "./category";
-import { addNewGames } from "../store/slice/newGames";
-import { addPlatform } from "../store/slice/platform";
 
 /**
  * Get publications

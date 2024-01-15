@@ -6,7 +6,7 @@ import {
     ActivityIndicator,
     Image,
 } from "react-native";
-import { LOAD_SIZE, GREEN } from "../../tools/constants";
+import { LOAD_SIZE, GREEN, ERROR_JWT_MESSAGE } from "../../tools/constants";
 import { getPlatforms } from "../../APIAccess/platform";
 import { getGenres } from "../../APIAccess/genre";
 import { getPublications } from "../../APIAccess/publication";
@@ -58,9 +58,7 @@ export default function LoadingPage({ navigation }) {
                 dispatch(addNewGames({ key: platform.code, values: games }));
             } catch (error) {
                 if (error.response?.data.code?.includes("JWT")) {
-                    // TODO message
-                    //! fais ton message fdp
-                    navigation.navigate("SignIn");
+                    navigation.navigate("SignIn",message = ERROR_JWT_MESSAGE);
                 }
             }
         }
@@ -72,7 +70,7 @@ export default function LoadingPage({ navigation }) {
                 navigation.navigate("Home");
             })
             .catch((error) => {
-                console.log(error);
+                navigation.navigate("SignIn",message = "App is not available for the moment");
             });
     }, []);
 

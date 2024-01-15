@@ -22,7 +22,7 @@ import {
 } from "../../tools/constants";
 import FilterModal from "./FilterModal";
 import ErrorText from "../Utils/ErrorText";
-import { API_BASE_URL } from "../../tools/constants";
+import { API_BASE_URL,ERROR_JWT_MESSAGE } from "../../tools/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
@@ -117,8 +117,8 @@ export default function Games({ route, navigation }) {
                 setGenres(response[1]);
             })
             .catch((error) => {
-                if (error.response?.data.code?.includes("JWT")) {
-                    navigation.navigate("SignIn");
+                if (error.response?.data?.code?.includes("JWT")) {
+                    navigation.navigate("SignIn",message = ERROR_JWT_MESSAGE);
                 }
             });
     }, []);
@@ -176,8 +176,8 @@ export default function Games({ route, navigation }) {
                 page.current += 1;
             })
             .catch((error) => {
-                if (error.response?.data.code?.includes("JWT")) {
-                    navigation.navigate("SignIn");
+                if (error.response?.data?.code?.includes("JWT")) {
+                    navigation.navigate("SignIn",message = ERROR_JWT_MESSAGE);
                 } else {
                     if (reload) {
                         setVideoGames([]);

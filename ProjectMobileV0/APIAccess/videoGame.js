@@ -7,9 +7,9 @@ import { API_URL } from "../tools/constants";
  * @param {number=} id the id of the video game
  * @param {string=} name the name of the video game
  *
+ * @throws {Error} if the request failed
  * @returns {Promise<Object[]>} A promise containing an array of video games
  *
- * @throws {Error} if the request failed
  */
 async function getVideoGames(id, name, token) {
     return (
