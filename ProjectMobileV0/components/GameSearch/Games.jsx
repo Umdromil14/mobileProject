@@ -13,7 +13,6 @@ import { Button, normalize } from "@rneui/themed";
 import { getPublications } from "../../APIAccess/publication";
 import Header from "../Global/Header";
 import {
-    DARK_GREY,
     HEADER_HEIGHT,
     TAB_NAVIGATOR_HEIGHT,
     GREEN,
@@ -21,7 +20,7 @@ import {
 } from "../../tools/constants";
 import FilterModal from "./FilterModal";
 import ErrorText from "../Utils/ErrorText";
-import { API_BASE_URL } from "../../tools/constants";
+import { API_BASE_URL,ERROR_JWT_MESSAGE } from "../../tools/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
@@ -35,14 +34,12 @@ const FILTER_BUTTON_WIDTH = 150;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: DARK_GREY,
     },
     body: {
         height:
             Dimensions.get("window").height -
             HEADER_HEIGHT -
             TAB_NAVIGATOR_HEIGHT,
-        backgroundColor: DARK_GREY,
         flexDirection: "row",
         flexWrap: "wrap",
     },
@@ -179,8 +176,8 @@ export default function Games({ route, navigation }) {
                 page.current += 1;
             })
             .catch((error) => {
-                if (error.response?.data.code?.includes("JWT")) {
-                    navigation.navigate("SignIn");
+                if (error.response?.data?.code?.includes("JWT")) {
+                    navigation.navigate("SignIn",message = ERROR_JWT_MESSAGE);
                 } else {
                     if (reload) {
                         setVideoGames([]);
@@ -265,7 +262,7 @@ export default function Games({ route, navigation }) {
         if (videoGames.length === 0) {
             if (search !== "" || selectedFilter.genres.length !== 0) {
                 return (
-                    <ErrorText errorMessage="No video game matches your search criteria" />
+                    <ErrorText errorMessage="No video games match your search criteria" />
                 );
             }
             return <ErrorText errorMessage="Nothing to see here" />;

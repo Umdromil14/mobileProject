@@ -33,6 +33,4 @@ async function getPublications(options,token) {
     })).data;
 }
 
-// TODO promise return
-
 export { getPublications };

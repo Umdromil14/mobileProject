@@ -42,9 +42,12 @@ async function connection(user) {
 
 /**
  * Get the user associated with the token
+ * 
+ * @param {string} token The token of the user
  *
  * @throws {Error} if the request failed
- * @returns {Promise<object>} user object
+ * 
+ * @returns {Promise<object>} A promise containing the user as an object
  */
 async function getUser(token) {
     return (

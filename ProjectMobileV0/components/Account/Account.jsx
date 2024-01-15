@@ -13,7 +13,15 @@ import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { globalStyles } from "../../styles/globalStyles";
 import { getUser, updateUser } from "../../APIAccess/user";
 import Header from "../Global/Header";
-import { GREEN } from "../../tools/constants";
+import {
+    GREEN,
+    ERROR_JWT_MESSAGE,
+    USERNAME,
+    FIRSTNAME,
+    LASTNAME,
+    EMAIL,
+    UNKNOW_ERROR,
+} from "../../tools/constants";
 import { useSelector } from "react-redux";
 
 const styles = StyleSheet.create({
@@ -21,11 +29,18 @@ const styles = StyleSheet.create({
         width: Dimensions.get("window").width - 100,
         alignSelf: "center",
     },
+    labelText: {
+        paddingTop: 12,
+        paddingLeft: 16,
+        fontSize: 18,
+        fontWeight: "bold",
+        color: GREEN,
+    },
 });
 /**
  * Account page displaying the data of the user
- * 
- * @param {object} props 
+ *
+ * @param {object} props
  * @param {object} props.navigation navigation object used to navigate between pages
  *
  * @returns {JSX.Element} header of the application
@@ -45,24 +60,26 @@ function Account({ navigation }) {
 
     useEffect(() => {
         getUser(token)
-            .then((response) => {
-                setForm(response);
+            .then((user) => {
+                setUserForm(user);
             })
             .catch((error) => {
                 if (error.response?.data?.code.includes("JWT")) {
-                    navigation.navigate("SignIn", {message : "It seems your account has a problem" });
+                    navigation.navigate("SignIn", {
+                        message: ERROR_JWT_MESSAGE,
+                    });
                 }
             });
     }, []);
 
     /**
      * Display the error message or clean if empty one
-     * 
+     *
      * @param {string} errorUsername error message for username
      * @param {string} errorMail error message for mail
      * @param {string} errorFirstname error message for firstname
      * @param {string} errorLastname error message for lastname
-     * 
+     *
      * @returns {void}
      */
     function displayError(
@@ -71,8 +88,8 @@ function Account({ navigation }) {
         errorFirstname,
         errorLastname
     ) {
-        setForm({
-            ...form,
+        setUserForm({
+            ...userForm,
             errorUsername: errorUsername,
             errorMail: errorMail,
             errorFirstname: errorFirstname,
@@ -82,16 +99,18 @@ function Account({ navigation }) {
 
     /**
      * Modify the user
-     * 
+     *
      * @returns {void}
      */
     function modifyUser() {
-        if (isValidForm(form, setForm, true)) {
-            updateUser(form, token)
+        if (isValidForm(userForm, setUserForm, true)) {
+            updateUser(userForm, token)
                 .then(displayError)
                 .catch((error) => {
                     if (error.response?.data?.code.includes("JWT")) {
-                        navigation.navigate("SignIn", { message : "It seems your account has a problem" });
+                        navigation.navigate("SignIn", {
+                            message: ERROR_JWT_MESSAGE,
+                        });
                     } else if (
                         error.response?.data?.code.includes("DUPLICATE")
                     ) {
@@ -100,7 +119,7 @@ function Account({ navigation }) {
                             "Email already taken"
                         );
                     } else {
-                        displayError("An error occured", "An error occured");
+                        displayError(UNKNOW_ERROR, UNKNOW_ERROR);
                     }
                 });
         }
@@ -120,82 +139,72 @@ function Account({ navigation }) {
                     { paddingVertical: 10 },
                 ]}
             >
-                <Text style={[globalStyles.textForm, { color: GREEN }]}>
-                    Username
-                </Text>
+                <Text style={styles.labelText}>{USERNAME}</Text>
                 <Input
                     inputStyle={globalStyles.inputLabel}
                     inputContainerStyle={globalStyles.inputContainer}
                     errorStyle={globalStyles.error}
                     errorProps={globalStyles.errorProps}
-                    errorMessage={form.errorUsername}
+                    errorMessage={userForm.errorUsername}
                     style={globalStyles.inputForm}
-                    placeholder="Username"
-                    value={form.username}
+                    placeholder={USERNAME}
+                    value={userForm.username}
                     onChangeText={(username) =>
-                        setForm({ ...form, username })
+                        setUserForm({ ...userForm, username })
                     }
                 />
-                <Text style={[globalStyles.textForm, { color: GREEN }]}>
-                    Firstname
-                </Text>
+                <Text style={styles.labelText}>{FIRSTNAME}</Text>
                 <Input
                     inputStyle={globalStyles.inputLabel}
                     inputContainerStyle={globalStyles.inputContainer}
                     errorStyle={globalStyles.error}
                     errorProps={globalStyles.errorProps}
-                    errorMessage={form.errorFirstname}
+                    errorMessage={userForm.errorFirstname}
                     style={globalStyles.inputForm}
-                    placeholder="Firstname"
-                    value={form.firstname}
+                    placeholder={FIRSTNAME}
+                    value={userForm.firstname}
                     onChangeText={(firstname) =>
-                        setForm({
-                            ...form,
+                        setUserForm({
+                            ...userForm,
                             firstname: firstname.length > 0 ? firstname : null,
                         })
                     }
                 />
-                <Text style={[globalStyles.textForm, { color: GREEN }]}>
-                    Lastname
-                </Text>
+                <Text style={styles.labelText}>{LASTNAME}</Text>
                 <Input
                     inputStyle={globalStyles.inputLabel}
                     inputContainerStyle={globalStyles.inputContainer}
                     errorStyle={globalStyles.error}
                     errorProps={globalStyles.errorProps}
-                    errorMessage={form.errorLastname}
+                    errorMessage={userForm.errorLastname}
                     style={globalStyles.inputForm}
-                    placeholder="Lastname"
-                    value={form.lastname}
+                    placeholder={LASTNAME}
+                    value={userForm.lastname}
                     onChangeText={(lastname) =>
-                        setForm({
-                            ...form,
+                        setUserForm({
+                            ...userForm,
                             lastname: lastname.length > 0 ? lastname : null,
                         })
                     }
                 />
-                <Text style={[globalStyles.textForm, { color: GREEN }]}>
-                    Email
-                </Text>
+                <Text style={styles.labelText}>{EMAIL}</Text>
                 <Input
                     inputStyle={globalStyles.inputLabel}
                     inputContainerStyle={globalStyles.inputContainer}
                     errorStyle={globalStyles.error}
                     errorProps={globalStyles.errorProps}
-                    errorMessage={form.errorMail}
+                    errorMessage={userForm.errorMail}
                     style={globalStyles.inputForm}
-                    placeholder="Email"
-                    value={form.email}
-                    onChangeText={(email) => setForm({ ...form, email })}
+                    placeholder={EMAIL}
+                    value={userForm.email}
+                    onChangeText={(email) =>
+                        setUserForm({ ...userForm, email })
+                    }
                 />
                 <Button
                     title="Modify"
                     titleStyle={{ fontWeight: "700" }}
-                    buttonStyle={{
-                        backgroundColor: "#59A52C",
-                        borderWidth: 0,
-                        borderRadius: 20,
-                    }}
+                    buttonStyle={globalStyles.button}
                     containerStyle={globalStyles.modifyButtonContainer}
                     onPress={modifyUser}
                 />

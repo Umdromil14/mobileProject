@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { DARK_GREY } from "../tools/constants";
+import { GREEN } from "../tools/constants";
 
 export const globalStyles = StyleSheet.create({
 
@@ -18,7 +18,6 @@ export const globalStyles = StyleSheet.create({
         flexDirection:'row'
     },
     background : {
-        backgroundColor: DARK_GREY,
         flex: 1, 
         alignItems: "center", 
         justifyContent: "center"
@@ -46,7 +45,7 @@ export const globalStyles = StyleSheet.create({
         color: '#fff',
     },
     button : {
-        backgroundColor: '#59A52C',
+        backgroundColor: GREEN,
         borderWidth: 0,
         borderRadius: 20,
     },
@@ -62,7 +61,7 @@ export const globalStyles = StyleSheet.create({
         fontWeight : 'bold',
     },
     greenText: {
-        color : "#59A52C"
+        color : GREEN
     },
     whiteText: {
         color: "#fff"
@@ -72,7 +71,7 @@ export const globalStyles = StyleSheet.create({
         alignSelf: "center",
         marginBottom: 50,
         marginTop: 15,
-        color: "#59A52C"
+        color: GREEN
     },
     headerBackgroundColor: {
         backgroundColor: "#443D3D",

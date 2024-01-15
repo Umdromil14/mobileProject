@@ -14,6 +14,7 @@ import { connection } from "../../APIAccess/user";
 import { isValidEmail, isValidUsername } from "../../tools/utils";
 import { useDispatch } from "react-redux";
 import { addToken } from "../../store/slice/token";
+import { LOGIN, PASSWORD, EMAIL, USERNAME, UNKNOW_ERROR } from "../../tools/constants";
 
 const styles = StyleSheet.create({
     tinyLogo: {
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
  * @param {object} props
  * @param {any} props.navigation navigation object
  * @param {object} props.route route params
- * @param {boolean} props.route.params.disconnect if the user has been disconnected
+ * @param {string} props.route.params.message message to display if the user is redirected from another page
  *
  * @returns {JSX.Element}
  */
@@ -94,7 +95,7 @@ function SignIn({ route, navigation }) {
                 .catch((err) => {
                     err.response?.status === 401
                         ? setErrorPassword("Wrong username/email or password")
-                        : setErrorPassword("An error occured");
+                        : setErrorPassword(UNKNOW_ERROR);
                 });
         } else {
             setErrorIdentifiant("Please enter a valid email or username");
@@ -110,23 +111,23 @@ function SignIn({ route, navigation }) {
                 </Text>
             )}
             <View style={styles.form}>
-                <Text style={globalStyles.textForm}>Identifiant</Text>
+                <Text style={globalStyles.textForm}>{LOGIN}</Text>
                 <Input
                     style={globalStyles.inputLabel}
                     inputContainerStyle={globalStyles.inputContainer}
                     errorStyle={globalStyles.error}
-                    placeholder="Username or email"
+                    placeholder={`${USERNAME} or ${EMAIL}`}
                     value={login}
                     onChangeText={(login) => setLogin(login)}
                     leftIcon={<FontAwesomeIcon icon={faUser} size={24} />}
                     errorMessage={erroridentifiant}
                 />
-                <Text style={globalStyles.textForm}>Password</Text>
+                <Text style={globalStyles.textForm}>{PASSWORD}</Text>
                 <Input
                     style={globalStyles.inputLabel}
                     inputContainerStyle={globalStyles.inputContainer}
                     errorStyle={globalStyles.error}
-                    placeholder="Password"
+                    placeholder={PASSWORD}
                     value={password}
                     onChangeText={(password) => setPassword(password)}
                     leftIcon={<FontAwesomeIcon icon={faLock} size={24} />}
@@ -145,11 +146,7 @@ function SignIn({ route, navigation }) {
             <Button
                 title="Sign In"
                 titleStyle={{ fontWeight: "700" }}
-                buttonStyle={{
-                    backgroundColor: "#59A52C",
-                    borderWidth: 0,
-                    borderRadius: 20,
-                }}
+                buttonStyle={globalStyles.button}
                 containerStyle={{
                     width: 200,
                     marginHorizontal: 50,
@@ -164,11 +161,10 @@ function SignIn({ route, navigation }) {
             <Button
                 title="Create a account"
                 titleStyle={{ fontWeight: "700" }}
-                buttonStyle={{
-                    backgroundColor: "#0000",
-                    borderWidth: 0,
-                    borderRadius: 20,
-                }}
+                buttonStyle={[
+                    globalStyles.button,
+                    { backgroundColor: "#0000" },
+                ]}
                 containerStyle={{
                     width: 200,
                     marginHorizontal: 50,

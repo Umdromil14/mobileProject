@@ -8,11 +8,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { deleteUser } from "../../APIAccess/user";
 import Header from "../Global/Header";
-import { GREEN } from "../../tools/constants";
+import { ERROR_JWT_MESSAGE, GREEN, UNKNOW_ERROR } from "../../tools/constants";
 import { useState } from "react";
 import { removeToken } from "../../store/slice/token";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const styles = StyleSheet.create({
     containerButton: {
@@ -32,9 +31,8 @@ const styles = StyleSheet.create({
  * @returns {JSX.Element} settings of the application
  */
 function Settings({ navigation }) {
-    const token = useSelector((state) => state.token.token);
     const dispatch = useDispatch();
-    const [forbidden, setForbidden] = useState(false);
+    const token = useSelector((state) => state.token.token);
     const [error, setError] = useState("");
 
     /**
@@ -51,12 +49,14 @@ function Settings({ navigation }) {
             .catch((error) => {
                 if (error.response?.data?.code.includes("JWT")) {
                     navigation.navigate("SignIn", {
-                        message: "It seems your account has a problem",
+                        message: ERROR_JWT_MESSAGE,
                     });
-                } else if (error.response?.data?.code.includes("FORBIDDEN")) {
-                    setForbidden(true);
                 } else {
-                    setError(error.response?.data?.message);
+                    setError(
+                        error.response?.data?.code.includes("FORBIDDEN")
+                            ? "You can't delete your account"
+                            : UNKNOW_ERROR
+                    );
                 }
             });
     }
@@ -68,7 +68,7 @@ function Settings({ navigation }) {
             }}
         >
             <Header />
-            {forbidden && (
+            {error && (
                 <Text
                     style={{
                         color: "#CC1616",
@@ -76,11 +76,8 @@ function Settings({ navigation }) {
                         textAlign: "center",
                     }}
                 >
-                    Cannot delete the account
+                    {error}
                 </Text>
-            )}
-            {error && (
-                <Text style={{ color: "#CC1616", fontSize: 20 }}>{error}</Text>
             )}
             <View style={{ padding: 10 }}>
                 <Pressable onPress={navigation.goBack}>

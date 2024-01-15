@@ -294,11 +294,7 @@ function SignUp({ navigation }) {
                 <Button
                     title="Register"
                     titleStyle={{ fontWeight: "700" }}
-                    buttonStyle={{
-                        backgroundColor: "#59A52C",
-                        borderWidth: 0,
-                        borderRadius: 20,
-                    }}
+                    buttonStyle={globalStyles.button}
                     containerStyle={{
                         width: 200,
                         marginHorizontal: 50,
@@ -310,11 +306,7 @@ function SignUp({ navigation }) {
                 <Button
                     title="Already have an account ?"
                     titleStyle={{ fontWeight: "700" }}
-                    buttonStyle={{
-                        backgroundColor: "#0000",
-                        borderWidth: 0,
-                        borderRadius: 20,
-                    }}
+                    buttonStyle={[globalStyles.button, { backgroundColor: "#0000" }]}
                     containerStyle={{
                         width: 200,
                         marginHorizontal: 50,
