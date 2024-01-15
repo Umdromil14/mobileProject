@@ -73,10 +73,15 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
     },
+    videoGameImage: {
+        height: IMAGE_HEIGHT,
+        width: IMAGE_WIDTH,
+        borderRadius: 5,
+    },
 });
 
 /**
- * Discover page of the application which is the first page after the sign in
+ * Discover page of the application
  *
  * @param {object} props The props object
  * @param {object} props.navigation The navigation object
@@ -95,7 +100,7 @@ export default function Discover({ navigation }) {
 
     useEffect(() => {
         getPublications(
-            { getOwnGames: true, sortByDate: true, limit: 50 },
+            { getOwnGames: true, sortByDate: true, limit: 30 },
             token
         )
             .then((videoGames) => {
@@ -149,10 +154,7 @@ export default function Discover({ navigation }) {
                         }
                     >
                         <Image
-                            style={{
-                                height: IMAGE_HEIGHT,
-                                width: IMAGE_WIDTH,
-                            }}
+                            style={styles.videoGameImage}
                             source={{
                                 uri: `${API_BASE_URL}/videoGame/${item.video_game_id}.png`,
                             }}

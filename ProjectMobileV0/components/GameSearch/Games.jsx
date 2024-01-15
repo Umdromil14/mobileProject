@@ -11,8 +11,6 @@ import {
 } from "react-native";
 import { Button, normalize } from "@rneui/themed";
 import { getPublications } from "../../APIAccess/publication";
-import { getPlatforms } from "../../APIAccess/platform";
-import { getGenres } from "../../APIAccess/genre";
 import Header from "../Global/Header";
 import {
     HEADER_HEIGHT,
@@ -71,6 +69,12 @@ const styles = StyleSheet.create({
         fontSize: normalize(18),
         fontWeight: "bold",
     },
+    videoGameImage: {
+        margin: IMAGE_MARGIN,
+        width: IMAGE_WIDTH,
+        height: IMAGE_HEIGHT,
+        borderRadius: 5,
+    },
 });
 
 /**
@@ -87,15 +91,24 @@ const styles = StyleSheet.create({
  */
 export default function Games({ route, navigation }) {
     const token = useSelector((state) => state.token.token);
+    const platforms = useSelector((state) => state.platformList.platforms);
+    const genres = useSelector((state) => state.genreList.genres);
+
+    const getDefaultPlatform = () => {
+        const platform = platforms.find(
+            (platform) => platform.code === "PC"
+        )?.code;
+
+        return platform ?? platforms[0]?.code;
+    };
+
     const {
-        defaultPlatform = "PC",
+        defaultPlatform = getDefaultPlatform(),
         getOwnGames = true,
         sortByDate = false,
     } = route.params;
 
     const [search, setSearch] = useState("");
-    const [platforms, setPlatforms] = useState([]);
-    const [genres, setGenres] = useState([]);
     const [videoGames, setVideoGames] = useState([]);
 
     const [selectedFilter, setSelectedFilter] = useState({
@@ -109,19 +122,6 @@ export default function Games({ route, navigation }) {
     const [loadMore, setLoadMore] = useState(true);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    useEffect(() => {
-        Promise.all([getPlatforms(), getGenres(undefined, true)])
-            .then((response) => {
-                setPlatforms(response[0]);
-                setGenres(response[1]);
-            })
-            .catch((error) => {
-                if (error.response?.data?.code?.includes("JWT")) {
-                    navigation.navigate("SignIn",message = ERROR_JWT_MESSAGE);
-                }
-            });
-    }, []);
 
     useEffect(() => {
         if (firstLoad.current) {
@@ -211,11 +211,7 @@ export default function Games({ route, navigation }) {
                     source={{
                         uri: `${API_BASE_URL}/videoGame/${item.video_game_id}.png`,
                     }}
-                    style={{
-                        margin: IMAGE_MARGIN,
-                        width: IMAGE_WIDTH,
-                        height: IMAGE_HEIGHT,
-                    }}
+                    style={styles.videoGameImage}
                 />
             </Pressable>
         );

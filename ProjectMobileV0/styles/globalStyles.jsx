@@ -61,7 +61,7 @@ export const globalStyles = StyleSheet.create({
         fontWeight : 'bold',
     },
     greenText: {
-        color : "#59A52C"
+        color : GREEN
     },
     whiteText: {
         color: "#fff"
@@ -71,7 +71,7 @@ export const globalStyles = StyleSheet.create({
         alignSelf: "center",
         marginBottom: 50,
         marginTop: 15,
-        color: "#59A52C"
+        color: GREEN
     },
     headerBackgroundColor: {
         backgroundColor: "#443D3D",

@@ -67,7 +67,7 @@ async function createGame(newGame, token) {
  * 
  * @param {number} publicationId the id of the publication; if not specified, all games are returned
  * @param {object} updateGame the object containing the values to update
- * @param {boolean=} updateGame.is_owned the value to know if the user has the game (true) or no (false).
+ * @param {boolean=} updateGame.is_owned the value to know if the user has the game `true` or no `false`.
  * @param {string=} updateGame.review_comment the comment that the user gave to the game
  * @param {number=} updateGame.review_rating the rating the user gave to the game
  * @param {string} token user's token

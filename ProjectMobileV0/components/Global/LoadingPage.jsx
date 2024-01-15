@@ -27,14 +27,29 @@ const styles = StyleSheet.create({
     logo: {
         width: LOGO_SIZE,
         height: LOGO_SIZE,
-        paddingBottom: 10,
+        paddingBottom: 20,
     },
 });
 
+/**
+ * Loading page that will load the platforms, genres and new games and then navigate to the home page
+ * 
+ * @param {object} props The props object
+ * @param {object} props.navigation The navigation object
+ * 
+ * @returns {JSX.Element} The loading page component
+ */
 export default function LoadingPage({ navigation }) {
     const dispatch = useDispatch();
     const token = useSelector((state) => state.token.token);
 
+    /**
+     * Get the platforms, genres and new games and dispatch them to the store
+     * 
+     * @returns {Promise<void>} A promise that resolves when the platforms, genres and new games are loaded
+     * 
+     * @throws {Error} An error if the request failed
+     */
     const getStoreValues = async () => {
         const [platforms, genres] = await Promise.all([
             getPlatforms(),

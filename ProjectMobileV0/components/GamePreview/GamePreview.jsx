@@ -273,7 +273,7 @@ function GamePreview({ route, navigation }) {
                 <View style={globalStyles.containerInsideView}>
                     <View style={{ height: IMAGE_HEIGHT, marginTop: 15 }}>
                         <Image
-                            style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH }}
+                            style={{ height: IMAGE_HEIGHT, width: IMAGE_WIDTH, borderRadius: 5 }}
                             source={{
                                 uri: `${API_BASE_URL}/videoGame/${videoGameId}.png`,
                             }}
